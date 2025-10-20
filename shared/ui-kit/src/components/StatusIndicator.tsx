@@ -7,14 +7,22 @@ interface StatusIndicatorProps {
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, label }) => {
   const colors = {
-    active: '#00ff00',
-    inactive: '#ff0000',
-    warning: '#ffff00'
+    active: '#22c55e', // More accessible green
+    inactive: '#ef4444', // More accessible red
+    warning: '#f59e0b'  // More accessible amber
+  }
+
+  const statusLabels = {
+    active: 'Active',
+    inactive: 'Inactive', 
+    warning: 'Warning'
   }
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
       <div 
+        role="status"
+        aria-label={`Status: ${statusLabels[status]}`}
         style={{
           display: 'inline-block',
           width: '10px',

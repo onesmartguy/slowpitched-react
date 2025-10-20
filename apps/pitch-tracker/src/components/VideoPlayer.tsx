@@ -19,6 +19,14 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
     const VIDEO_WIDTH = 640
     const VIDEO_HEIGHT = 480
 
+    // Yellow ball detection configuration
+    const YELLOW_DETECTION_CONFIG = {
+      RED_THRESHOLD: 150,
+      GREEN_THRESHOLD: 150, 
+      BLUE_THRESHOLD: 100,
+      INTENSITY_RATIO: 2.5
+    }
+
     const detectYellowBall = useCallback((imageData: ImageData, roi: ROIPosition) => {
       // Simple yellow ball detection algorithm
       const data = imageData.data
@@ -32,7 +40,10 @@ const VideoPlayer = forwardRef<HTMLVideoElement, VideoPlayerProps>(
           const b = data[index + 2]
           
           // Detect yellow-ish pixels (high R+G, low B)
-          if (r > 150 && g > 150 && b < 100 && (r + g) > 2.5 * b) {
+          if (r > YELLOW_DETECTION_CONFIG.RED_THRESHOLD && 
+              g > YELLOW_DETECTION_CONFIG.GREEN_THRESHOLD && 
+              b < YELLOW_DETECTION_CONFIG.BLUE_THRESHOLD && 
+              (r + g) > YELLOW_DETECTION_CONFIG.INTENSITY_RATIO * b) {
             // Mock pitch data calculation
             const height = 6 - ((y - roi.y) / roi.height) * 4 // 2-6 feet range
             const velocity = 45 + Math.random() * 20 // 45-65 mph
