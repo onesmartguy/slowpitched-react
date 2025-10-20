@@ -1,96 +1,106 @@
-import React from 'react'
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 interface CalibrationMeterProps {
-  minHeight?: number
-  maxHeight?: number
+  minHeight?: number;
+  maxHeight?: number;
 }
 
 const CalibrationMeter: React.FC<CalibrationMeterProps> = ({ 
   minHeight = 2, 
   maxHeight = 6 
 }) => {
-  const ticks = []
-  const range = maxHeight - minHeight
-  const tickCount = range * 2 // Half-foot increments
+  const ticks = [];
+  const range = maxHeight - minHeight;
+  const tickCount = range * 2; // Half-foot increments
   
   for (let i = 0; i <= tickCount; i++) {
-    const height = minHeight + (i / tickCount) * range
-    const isFullFoot = height % 1 === 0
+    const height = minHeight + (i / tickCount) * range;
+    const isFullFoot = height % 1 === 0;
     
     ticks.push(
-      <div key={i} style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        marginBottom: '3px',
-        height: '8px'
-      }}>
-        <div 
-          className="meter-tick"
-          style={{
-            width: isFullFoot ? '20px' : '12px',
-            height: '2px',
-            background: '#fff',
-            marginRight: '5px'
-          }}
+      <View key={i} style={styles.tickContainer}>
+        <View 
+          style={[
+            styles.tick,
+            { width: isFullFoot ? 20 : 12 }
+          ]}
         />
         {isFullFoot && (
-          <span className="meter-label" style={{ 
-            color: '#fff', 
-            fontSize: '10px',
-            minWidth: '20px'
-          }}>
+          <Text style={styles.tickLabel}>
             {height}ft
-          </span>
+          </Text>
         )}
-      </div>
-    )
+      </View>
+    );
   }
 
   return (
-    <div 
-      className="calibration-meter"
-      style={{
-        position: 'absolute',
-        right: 10,
-        top: 10,
-        width: '60px',
-        background: 'rgba(0, 0, 0, 0.8)',
-        borderRadius: '4px',
-        padding: '10px 5px',
-        border: '1px solid #555'
-      }}
-    >
-      <div style={{ 
-        color: '#fff', 
-        fontSize: '10px', 
-        textAlign: 'center', 
-        marginBottom: '8px',
-        fontWeight: 'bold'
-      }}>
-        HEIGHT
-      </div>
+    <View style={styles.calibrationMeter}>
+      <Text style={styles.title}>HEIGHT</Text>
       
-      <div style={{ display: 'flex', flexDirection: 'column-reverse' }}>
-        {ticks}
-      </div>
+      <View style={styles.ticksContainer}>
+        {ticks.reverse()}
+      </View>
       
-      <div style={{
-        marginTop: '8px',
-        padding: '4px',
-        background: 'rgba(0, 255, 0, 0.2)',
-        borderRadius: '2px',
-        textAlign: 'center'
-      }}>
-        <div style={{ 
-          color: '#0f0', 
-          fontSize: '8px',
-          fontWeight: 'bold'
-        }}>
-          CALIBRATED
-        </div>
-      </div>
-    </div>
-  )
-}
+      <View style={styles.calibratedIndicator}>
+        <Text style={styles.calibratedText}>CALIBRATED</Text>
+      </View>
+    </View>
+  );
+};
 
-export default CalibrationMeter
+const styles = StyleSheet.create({
+  calibrationMeter: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    width: 60,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderRadius: 4,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    borderWidth: 1,
+    borderColor: '#555',
+  },
+  title: {
+    color: '#fff',
+    fontSize: 10,
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: 'bold',
+  },
+  ticksContainer: {
+    flexDirection: 'column',
+  },
+  tickContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 3,
+    height: 8,
+  },
+  tick: {
+    height: 2,
+    backgroundColor: '#fff',
+    marginRight: 5,
+  },
+  tickLabel: {
+    color: '#fff',
+    fontSize: 10,
+    minWidth: 20,
+  },
+  calibratedIndicator: {
+    marginTop: 8,
+    padding: 4,
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    borderRadius: 2,
+    alignItems: 'center',
+  },
+  calibratedText: {
+    color: '#22c55e',
+    fontSize: 8,
+    fontWeight: 'bold',
+  },
+});
+
+export default CalibrationMeter;

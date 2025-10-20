@@ -1,102 +1,143 @@
-import { PitchData } from '../types'
+import * as SQLite from 'expo-sqlite';
+import { PitchData } from '../types';
 
-// Simple IndexedDB wrapper for pitch data storage
+// SQLite wrapper for pitch data storage in React Native
 class PitchDatabase {
-  private dbName = 'PitchTrackerDB'
-  private version = 1
-  private db: IDBDatabase | null = null
+  private db: SQLite.SQLiteDatabase | null = null;
+  private dbName = 'pitchtracker.db';
 
   async initialize(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.version)
+    try {
+      this.db = await SQLite.openDatabaseAsync(this.dbName);
       
-      request.onerror = () => reject(request.error)
-      request.onsuccess = () => {
-        this.db = request.result
-        resolve()
-      }
-      
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result
+      // Create tables if they don't exist
+      await this.db.execAsync(`
+        CREATE TABLE IF NOT EXISTS pitches (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          timestamp TEXT NOT NULL,
+          height REAL NOT NULL,
+          velocity REAL NOT NULL,
+          x REAL NOT NULL,
+          y REAL NOT NULL,
+          savedAt TEXT NOT NULL
+        );
         
-        // Create pitch data store
-        if (!db.objectStoreNames.contains('pitches')) {
-          const store = db.createObjectStore('pitches', { keyPath: 'id', autoIncrement: true })
-          store.createIndex('timestamp', 'timestamp', { unique: false })
-          store.createIndex('height', 'height', { unique: false })
-        }
+        CREATE TABLE IF NOT EXISTS sessions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          startTime TEXT NOT NULL,
+          endTime TEXT,
+          pitchCount INTEGER DEFAULT 0
+        );
         
-        // Create sessions store
-        if (!db.objectStoreNames.contains('sessions')) {
-          const sessionsStore = db.createObjectStore('sessions', { keyPath: 'id', autoIncrement: true })
-          sessionsStore.createIndex('startTime', 'startTime', { unique: false })
-        }
-      }
-    })
+        CREATE INDEX IF NOT EXISTS idx_timestamp ON pitches(timestamp);
+        CREATE INDEX IF NOT EXISTS idx_height ON pitches(height);
+      `);
+    } catch (error) {
+      throw new Error(`Failed to initialize database: ${error}`);
+    }
   }
 
   async savePitch(pitchData: PitchData): Promise<number> {
-    if (!this.db) throw new Error('Database not initialized')
+    if (!this.db) throw new Error('Database not initialized');
     
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['pitches'], 'readwrite')
-      const store = transaction.objectStore('pitches')
-      const request = store.add({ ...pitchData, savedAt: new Date().toISOString() })
+    try {
+      const result = await this.db.runAsync(
+        'INSERT INTO pitches (timestamp, height, velocity, x, y, savedAt) VALUES (?, ?, ?, ?, ?, ?)',
+        [
+          pitchData.timestamp,
+          pitchData.height,
+          pitchData.velocity,
+          pitchData.x,
+          pitchData.y,
+          new Date().toISOString()
+        ]
+      );
       
-      request.onerror = () => reject(request.error)
-      request.onsuccess = () => resolve(request.result as number)
-    })
+      return result.lastInsertRowId;
+    } catch (error) {
+      throw new Error(`Failed to save pitch: ${error}`);
+    }
   }
 
   async getAllPitches(): Promise<PitchData[]> {
-    if (!this.db) throw new Error('Database not initialized')
+    if (!this.db) throw new Error('Database not initialized');
     
-    return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction(['pitches'], 'readonly')
-      const store = transaction.objectStore('pitches')
-      const request = store.getAll()
-      
-      request.onerror = () => reject(request.error)
-      request.onsuccess = () => resolve(request.result)
-    })
+    try {
+      const result = await this.db.getAllAsync('SELECT * FROM pitches ORDER BY timestamp DESC');
+      return result.map((row: any) => ({
+        timestamp: row.timestamp,
+        height: row.height,
+        velocity: row.velocity,
+        x: row.x,
+        y: row.y
+      }));
+    } catch (error) {
+      throw new Error(`Failed to get pitches: ${error}`);
+    }
+  }
+
+  async clearAllData(): Promise<void> {
+    if (!this.db) throw new Error('Database not initialized');
+    
+    try {
+      await this.db.execAsync(`
+        DELETE FROM pitches;
+        DELETE FROM sessions;
+      `);
+    } catch (error) {
+      throw new Error(`Failed to clear data: ${error}`);
+    }
   }
 
   async getStatistics(): Promise<{
-    totalPitches: number
-    averageHeight: number
-    averageVelocity: number
-    heightRange: { min: number; max: number }
-    velocityRange: { min: number; max: number }
+    totalPitches: number;
+    averageHeight: number;
+    averageVelocity: number;
+    heightRange: { min: number; max: number };
+    velocityRange: { min: number; max: number };
   }> {
-    const pitches = await this.getAllPitches()
+    if (!this.db) throw new Error('Database not initialized');
     
-    if (pitches.length === 0) {
-      return {
-        totalPitches: 0,
-        averageHeight: 0,
-        averageVelocity: 0,
-        heightRange: { min: 0, max: 0 },
-        velocityRange: { min: 0, max: 0 }
+    try {
+      const result = await this.db.getFirstAsync(`
+        SELECT 
+          COUNT(*) as totalPitches,
+          AVG(height) as averageHeight,
+          AVG(velocity) as averageVelocity,
+          MIN(height) as minHeight,
+          MAX(height) as maxHeight,
+          MIN(velocity) as minVelocity,
+          MAX(velocity) as maxVelocity
+        FROM pitches
+      `) as any;
+      
+      if (!result || result.totalPitches === 0) {
+        return {
+          totalPitches: 0,
+          averageHeight: 0,
+          averageVelocity: 0,
+          heightRange: { min: 0, max: 0 },
+          velocityRange: { min: 0, max: 0 }
+        };
       }
-    }
 
-    const heights = pitches.map(p => p.height)
-    const velocities = pitches.map(p => p.velocity)
-    
-    return {
-      totalPitches: pitches.length,
-      averageHeight: heights.reduce((sum, h) => sum + h, 0) / heights.length,
-      averageVelocity: velocities.reduce((sum, v) => sum + v, 0) / velocities.length,
-      heightRange: {
-        min: Math.min(...heights),
-        max: Math.max(...heights)
-      },
-      velocityRange: {
-        min: Math.min(...velocities),
-        max: Math.max(...velocities)
-      }
+      return {
+        totalPitches: result.totalPitches,
+        averageHeight: result.averageHeight || 0,
+        averageVelocity: result.averageVelocity || 0,
+        heightRange: {
+          min: result.minHeight || 0,
+          max: result.maxHeight || 0
+        },
+        velocityRange: {
+          min: result.minVelocity || 0,
+          max: result.maxVelocity || 0
+        }
+      };
+    } catch (error) {
+      throw new Error(`Failed to get statistics: ${error}`);
     }
   }
 }
 
-export const pitchDB = new PitchDatabase()
+export const pitchDB = new PitchDatabase();

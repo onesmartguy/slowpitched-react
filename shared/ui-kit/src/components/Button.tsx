@@ -1,76 +1,105 @@
-import React from 'react'
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
 interface ButtonProps {
-  children: React.ReactNode
-  onClick?: () => void
-  disabled?: boolean
-  variant?: 'primary' | 'secondary' | 'danger'
-  size?: 'small' | 'medium' | 'large'
+  children: React.ReactNode;
+  onPress?: () => void;
+  disabled?: boolean;
+  variant?: 'primary' | 'secondary' | 'danger';
+  size?: 'small' | 'medium' | 'large';
+  style?: ViewStyle;
 }
 
 const Button: React.FC<ButtonProps> = ({ 
   children, 
-  onClick, 
+  onPress, 
   disabled = false, 
   variant = 'primary',
-  size = 'medium'
+  size = 'medium',
+  style
 }) => {
-  const baseStyles = {
-    borderRadius: '8px',
-    border: '1px solid transparent',
-    fontWeight: 500,
-    fontFamily: 'inherit',
-    cursor: disabled ? 'not-allowed' : 'pointer',
-    transition: 'all 0.25s',
-    opacity: disabled ? 0.5 : 1
-  }
+  const getButtonStyle = (): ViewStyle => {
+    const baseStyle: ViewStyle = {
+      borderRadius: 8,
+      borderWidth: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      opacity: disabled ? 0.5 : 1,
+    };
 
-  const variantStyles = {
-    primary: {
-      backgroundColor: '#1a1a1a',
-      color: '#ffffff',
-      border: '1px solid #646cff'
-    },
-    secondary: {
-      backgroundColor: '#f9f9f9',
-      color: '#1a1a1a',
-      border: '1px solid #ccc'
-    },
-    danger: {
-      backgroundColor: '#ff4444',
-      color: '#ffffff',
-      border: '1px solid #ff4444'
-    }
-  }
+    const variantStyles: Record<string, ViewStyle> = {
+      primary: {
+        backgroundColor: '#1a1a1a',
+        borderColor: '#646cff',
+      },
+      secondary: {
+        backgroundColor: '#f9f9f9',
+        borderColor: '#ccc',
+      },
+      danger: {
+        backgroundColor: '#ef4444',
+        borderColor: '#ef4444',
+      }
+    };
 
-  const sizeStyles = {
-    small: {
-      padding: '0.4em 0.8em',
-      fontSize: '0.9em'
-    },
-    medium: {
-      padding: '0.6em 1.2em',
-      fontSize: '1em'
-    },
-    large: {
-      padding: '0.8em 1.6em',
-      fontSize: '1.1em'
-    }
-  }
+    const sizeStyles: Record<string, ViewStyle> = {
+      small: {
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+      },
+      medium: {
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+      },
+      large: {
+        paddingVertical: 16,
+        paddingHorizontal: 20,
+      }
+    };
+
+    return {
+      ...baseStyle,
+      ...variantStyles[variant],
+      ...sizeStyles[size],
+    };
+  };
+
+  const getTextStyle = (): TextStyle => {
+    const baseTextStyle: TextStyle = {
+      fontWeight: '500',
+    };
+
+    const variantTextStyles: Record<string, TextStyle> = {
+      primary: { color: '#ffffff' },
+      secondary: { color: '#1a1a1a' },
+      danger: { color: '#ffffff' }
+    };
+
+    const sizeTextStyles: Record<string, TextStyle> = {
+      small: { fontSize: 14 },
+      medium: { fontSize: 16 },
+      large: { fontSize: 18 }
+    };
+
+    return {
+      ...baseTextStyle,
+      ...variantTextStyles[variant],
+      ...sizeTextStyles[size],
+    };
+  };
 
   return (
-    <button
-      onClick={onClick}
+    <TouchableOpacity
+      onPress={onPress}
       disabled={disabled}
-      style={{
-        ...baseStyles,
-        ...variantStyles[variant],
-        ...sizeStyles[size]
-      }}
+      style={[getButtonStyle(), style]}
+      activeOpacity={0.7}
     >
-      {children}
-    </button>
-  )
-}
+      <Text style={getTextStyle()}>
+        {children}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
-export default Button
+export default Button;

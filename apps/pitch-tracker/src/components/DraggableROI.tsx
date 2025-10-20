@@ -1,12 +1,18 @@
-import { useCallback } from 'react'
-import Draggable from 'react-draggable'
-import { ROIPosition } from '../types'
+import React, { useCallback } from 'react';
+import { View, Text, StyleSheet, PanResponder } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  runOnJS,
+} from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { ROIPosition } from '../types';
 
 interface DraggableROIProps {
-  roi: ROIPosition
-  onROIChange: (roi: ROIPosition) => void
-  containerWidth: number
-  containerHeight: number
+  roi: ROIPosition;
+  onROIChange: (roi: ROIPosition) => void;
+  containerWidth: number;
+  containerHeight: number;
 }
 
 const DraggableROI: React.FC<DraggableROIProps> = ({
@@ -15,131 +21,131 @@ const DraggableROI: React.FC<DraggableROIProps> = ({
   containerWidth,
   containerHeight
 }) => {
-  const handleDrag = useCallback((_e: any, data: { x: number; y: number }) => {
-    const newRoi = {
+  const translateX = useSharedValue(roi.x);
+  const translateY = useSharedValue(roi.y);
+
+  const updateROI = useCallback((newX: number, newY: number) => {
+    const clampedX = Math.max(0, Math.min(newX, containerWidth - roi.width));
+    const clampedY = Math.max(0, Math.min(newY, containerHeight - roi.height));
+    
+    onROIChange({
       ...roi,
-      x: Math.max(0, Math.min(data.x, containerWidth - roi.width)),
-      y: Math.max(0, Math.min(data.y, containerHeight - roi.height))
-    }
-    onROIChange(newRoi)
-  }, [roi, onROIChange, containerWidth, containerHeight])
+      x: clampedX,
+      y: clampedY
+    });
+  }, [roi, onROIChange, containerWidth, containerHeight]);
+
+  const panGesture = Gesture.Pan()
+    .onUpdate((event) => {
+      translateX.value = roi.x + event.translationX;
+      translateY.value = roi.y + event.translationY;
+    })
+    .onEnd((event) => {
+      const newX = roi.x + event.translationX;
+      const newY = roi.y + event.translationY;
+      runOnJS(updateROI)(newX, newY);
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+    ],
+  }));
+
+  // Reset animation values when roi changes externally
+  React.useEffect(() => {
+    translateX.value = roi.x;
+    translateY.value = roi.y;
+  }, [roi.x, roi.y]);
 
   const handleResize = useCallback((corner: string, deltaX: number, deltaY: number) => {
-    let newRoi = { ...roi }
+    let newRoi = { ...roi };
     
     switch (corner) {
       case 'se': // Southeast corner
-        newRoi.width = Math.max(50, Math.min(roi.width + deltaX, containerWidth - roi.x))
-        newRoi.height = Math.max(50, Math.min(roi.height + deltaY, containerHeight - roi.y))
-        break
+        newRoi.width = Math.max(50, Math.min(roi.width + deltaX, containerWidth - roi.x));
+        newRoi.height = Math.max(50, Math.min(roi.height + deltaY, containerHeight - roi.y));
+        break;
       case 'sw': // Southwest corner
-        const newWidth = Math.max(50, roi.width - deltaX)
-        const newX = Math.max(0, roi.x + (roi.width - newWidth))
-        newRoi.x = newX
-        newRoi.width = newWidth
-        newRoi.height = Math.max(50, Math.min(roi.height + deltaY, containerHeight - roi.y))
-        break
-      case 'ne': // Northeast corner
-        newRoi.width = Math.max(50, Math.min(roi.width + deltaX, containerWidth - roi.x))
-        const newHeight = Math.max(50, roi.height - deltaY)
-        const newY = Math.max(0, roi.y + (roi.height - newHeight))
-        newRoi.y = newY
-        newRoi.height = newHeight
-        break
-      case 'nw': // Northwest corner
-        const newWidthNW = Math.max(50, roi.width - deltaX)
-        const newHeightNW = Math.max(50, roi.height - deltaY)
-        newRoi.x = Math.max(0, roi.x + (roi.width - newWidthNW))
-        newRoi.y = Math.max(0, roi.y + (roi.height - newHeightNW))
-        newRoi.width = newWidthNW
-        newRoi.height = newHeightNW
-        break
+        const newWidth = Math.max(50, roi.width - deltaX);
+        const newX = Math.max(0, roi.x + (roi.width - newWidth));
+        newRoi.x = newX;
+        newRoi.width = newWidth;
+        newRoi.height = Math.max(50, Math.min(roi.height + deltaY, containerHeight - roi.y));
+        break;
     }
     
-    onROIChange(newRoi)
-  }, [roi, onROIChange, containerWidth, containerHeight])
+    onROIChange(newRoi);
+  }, [roi, onROIChange, containerWidth, containerHeight]);
 
   return (
-    <Draggable
-      position={{ x: roi.x, y: roi.y }}
-      onDrag={handleDrag}
-      bounds={{ left: 0, top: 0, right: containerWidth - roi.width, bottom: containerHeight - roi.height }}
-    >
-      <div 
-        className="roi-overlay"
-        style={{
-          width: roi.width,
-          height: roi.height,
-          border: '2px solid #00ff00',
-          background: 'rgba(0, 255, 0, 0.1)',
-          position: 'absolute'
-        }}
+    <GestureDetector gesture={panGesture}>
+      <Animated.View
+        style={[
+          styles.roiOverlay,
+          {
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: roi.width,
+            height: roi.height,
+          },
+          animatedStyle,
+        ]}
       >
         {/* Corner resize handles */}
-        <div
-          className="roi-handle"
-          style={{ bottom: -5, right: -5, cursor: 'se-resize' }}
-          onMouseDown={(e) => {
-            e.stopPropagation()
-            const startX = e.clientX
-            const startY = e.clientY
-            
-            const handleMouseMove = (moveEvent: MouseEvent) => {
-              const deltaX = moveEvent.clientX - startX
-              const deltaY = moveEvent.clientY - startY
-              handleResize('se', deltaX, deltaY)
-            }
-            
-            const handleMouseUp = () => {
-              document.removeEventListener('mousemove', handleMouseMove)
-              document.removeEventListener('mouseup', handleMouseUp)
-            }
-            
-            document.addEventListener('mousemove', handleMouseMove)
-            document.addEventListener('mouseup', handleMouseUp)
-          }}
-        />
-        
-        <div
-          className="roi-handle"
-          style={{ bottom: -5, left: -5, cursor: 'sw-resize' }}
-          onMouseDown={(e) => {
-            e.stopPropagation()
-            const startX = e.clientX
-            const startY = e.clientY
-            
-            const handleMouseMove = (moveEvent: MouseEvent) => {
-              const deltaX = moveEvent.clientX - startX
-              const deltaY = moveEvent.clientY - startY
-              handleResize('sw', deltaX, deltaY)
-            }
-            
-            const handleMouseUp = () => {
-              document.removeEventListener('mousemove', handleMouseMove)
-              document.removeEventListener('mouseup', handleMouseUp)
-            }
-            
-            document.addEventListener('mousemove', handleMouseMove)
-            document.addEventListener('mouseup', handleMouseUp)
-          }}
-        />
+        <View style={[styles.resizeHandle, styles.seHandle]} />
+        <View style={[styles.resizeHandle, styles.swHandle]} />
         
         {/* ROI Info Label */}
-        <div style={{
-          position: 'absolute',
-          top: -25,
-          left: 0,
-          background: 'rgba(0, 0, 0, 0.8)',
-          color: '#0f0',
-          padding: '2px 6px',
-          fontSize: '12px',
-          borderRadius: '3px'
-        }}>
-          ROI: {roi.width}×{roi.height}
-        </div>
-      </div>
-    </Draggable>
-  )
-}
+        <View style={styles.roiLabel}>
+          <Text style={styles.roiLabelText}>
+            ROI: {Math.round(roi.width)}×{Math.round(roi.height)}
+          </Text>
+        </View>
+      </Animated.View>
+    </GestureDetector>
+  );
+};
 
-export default DraggableROI
+const styles = StyleSheet.create({
+  roiOverlay: {
+    borderWidth: 2,
+    borderColor: '#22c55e',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+  },
+  resizeHandle: {
+    position: 'absolute',
+    width: 12,
+    height: 12,
+    backgroundColor: '#22c55e',
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 2,
+  },
+  seHandle: {
+    bottom: -6,
+    right: -6,
+  },
+  swHandle: {
+    bottom: -6,
+    left: -6,
+  },
+  roiLabel: {
+    position: 'absolute',
+    top: -30,
+    left: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 3,
+  },
+  roiLabelText: {
+    color: '#22c55e',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+});
+
+export default DraggableROI;

@@ -1,37 +1,42 @@
-import React from 'react'
+import React from 'react';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 
 interface PanelProps {
-  children: React.ReactNode
-  title?: string
-  className?: string
+  children: React.ReactNode;
+  title?: string;
+  style?: ViewStyle;
 }
 
-const Panel: React.FC<PanelProps> = ({ children, title, className = '' }) => {
+const Panel: React.FC<PanelProps> = ({ children, title, style }) => {
   return (
-    <div 
-      className={`panel ${className}`}
-      style={{
-        background: '#1a1a1a',
-        borderRadius: '8px',
-        padding: '1rem',
-        border: '1px solid #333'
-      }}
-    >
+    <View style={[styles.panel, style]}>
       {title && (
-        <h3 style={{ 
-          color: '#fff', 
-          marginTop: 0, 
-          marginBottom: '1rem',
-          fontSize: '1.1em',
-          borderBottom: '1px solid #333',
-          paddingBottom: '0.5rem'
-        }}>
+        <Text style={styles.title}>
           {title}
-        </h3>
+        </Text>
       )}
       {children}
-    </div>
-  )
-}
+    </View>
+  );
+};
 
-export default Panel
+const styles = StyleSheet.create({
+  panel: {
+    backgroundColor: '#1a1a1a',
+    borderRadius: 8,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  title: {
+    color: '#fff',
+    marginBottom: 16,
+    fontSize: 16,
+    fontWeight: 'bold',
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+    paddingBottom: 8,
+  },
+});
+
+export default Panel;
