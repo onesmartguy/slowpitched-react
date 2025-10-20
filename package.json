@@ -1,0 +1,26 @@
+{
+  "name": "slowpitched-react",
+  "version": "1.0.0",
+  "description": "Pitch Height Tracker Pro - A React-based application for tracking softball pitch heights",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "shared/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/pitch-tracker",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
