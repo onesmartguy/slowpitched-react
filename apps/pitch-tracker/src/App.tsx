@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, SafeAreaView, Dimensions, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import VideoPlayer from './components/VideoPlayer';
 import ControlsPanel from './components/ControlsPanel';
 import Logger from './components/Logger';
@@ -49,10 +51,7 @@ export default function App() {
     ].join('\n');
 
     try {
-      // React Native file export will be handled by expo-sharing
-      const FileSystem = await import('expo-file-system');
-      const Sharing = await import('expo-sharing');
-      
+      // React Native file export using expo-sharing
       const fileName = `pitch_data_${Date.now()}.csv`;
       const fileUri = FileSystem.documentDirectory + fileName;
       
