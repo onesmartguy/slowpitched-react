@@ -16,6 +16,7 @@ import dataRouter from './routes/data';
 import analyticsRouter from './routes/analytics';
 import sessionRouter from './routes/session';
 import configRouter from './routes/config';
+import dbAdapter from './database/adapter';
 import healthRouter from './routes/health';
 
 // Logger configuration
@@ -107,11 +108,23 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// Start server
-app.listen(PORT, () => {
-  logger.info(`MCP Server running on port ${PORT}`);
-  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  logger.info('API Documentation: /api/health for status');
-});
+// Initialize database and start server
+dbAdapter
+  .initialize()
+  .then(() => {
+    logger.info('Database initialized successfully');
+
+    app.listen(PORT, () => {
+      logger.info(`MCP Server running on port ${PORT}`);
+      logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🚀 MCP Server running at http://localhost:${PORT}`);
+      console.log(`📊 Database: Connected`);
+    });
+  })
+  .catch((error) => {
+    logger.error('Failed to initialize database', error);
+    console.error('❌ Failed to initialize database:', error);
+    process.exit(1);
+  });
 
 export default app;

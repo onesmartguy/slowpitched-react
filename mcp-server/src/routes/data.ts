@@ -4,6 +4,8 @@
  */
 
 import { Router, Request, Response } from 'express';
+import dbAdapter from '../database/adapter';
+import { exportSessionToCSV } from '../../../apps/mobile/src/utils/csvExport';
 
 const router = Router();
 
@@ -21,20 +23,33 @@ router.get('/sessions', async (req: Request, res: Response) => {
   try {
     const { limit = '100', offset = '0', dateFrom, dateTo } = req.query;
 
-    // TODO: Integrate with mobile app's database
-    // For now, return mock data structure
-    const sessions = {
-      total: 0,
-      limit: parseInt(limit as string),
-      offset: parseInt(offset as string),
-      sessions: [],
+    let sessions;
+
+    if (dateFrom || dateTo) {
+      // Use date range filtering
+      const start = dateFrom ? (dateFrom as string) : new Date(0).toISOString();
+      const end = dateTo ? (dateTo as string) : new Date().toISOString();
+      sessions = await dbAdapter.getSessionsByDateRange(start, end);
+    } else {
+      // Get all sessions
+      sessions = await dbAdapter.getAllSessions();
+    }
+
+    // Apply pagination
+    const limitNum = parseInt(limit as string);
+    const offsetNum = parseInt(offset as string);
+    const paginatedSessions = sessions.slice(offsetNum, offsetNum + limitNum);
+
+    res.json({
+      total: sessions.length,
+      limit: limitNum,
+      offset: offsetNum,
+      sessions: paginatedSessions,
       filters: {
         dateFrom: dateFrom || null,
         dateTo: dateTo || null,
       },
-    };
-
-    res.json(sessions);
+    });
   } catch (error) {
     res.status(500).json({
       error: 'Failed to fetch sessions',
@@ -51,29 +66,23 @@ router.get('/sessions/:sessionId', async (req: Request, res: Response) => {
   try {
     const { sessionId } = req.params;
 
-    // TODO: Integrate with mobile app's database
-    const sessionData = {
-      session: {
-        id: sessionId,
-        name: 'Sample Session',
-        date: new Date().toISOString(),
-        pitchCount: 0,
-      },
-      pitches: [],
-      statistics: {
-        minHeight: 0,
-        maxHeight: 0,
-        avgHeight: 0,
-        stdDev: 0,
-        variance: 0,
-        medianHeight: 0,
-        percentile25: 0,
-        percentile75: 0,
-        totalPitches: 0,
-      },
-    };
+    const session = await dbAdapter.getSessionById(sessionId);
 
-    res.json(sessionData);
+    if (!session) {
+      return res.status(404).json({
+        error: 'Session not found',
+        message: `No session found with ID: ${sessionId}`,
+      });
+    }
+
+    const pitches = await dbAdapter.getPitchesBySession(sessionId);
+    const statistics = await dbAdapter.getSessionStatistics(sessionId);
+
+    res.json({
+      session,
+      pitches,
+      statistics,
+    });
   } catch (error) {
     res.status(500).json({
       error: 'Failed to fetch session',
@@ -94,18 +103,34 @@ router.get('/sessions/:sessionId/export', async (req: Request, res: Response) =>
     const { sessionId } = req.params;
     const { format = 'json' } = req.query;
 
+    const session = await dbAdapter.getSessionById(sessionId);
+
+    if (!session) {
+      return res.status(404).json({
+        error: 'Session not found',
+        message: `No session found with ID: ${sessionId}`,
+      });
+    }
+
     if (format === 'csv') {
-      // TODO: Generate CSV export
+      // Generate CSV export
+      const csv = await exportSessionToCSV(sessionId);
+
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', `attachment; filename="session_${sessionId}.csv"`);
-      res.send('# CSV export not yet implemented\n');
+      res.send(csv);
     } else {
-      // TODO: Generate JSON export
+      // Generate JSON export
+      const pitches = await dbAdapter.getPitchesBySession(sessionId);
+      const summary = await dbAdapter.getSessionSummary(sessionId);
+
       res.json({
         sessionId,
         exportedAt: new Date().toISOString(),
         format: 'json',
-        data: {},
+        session,
+        pitches,
+        summary,
       });
     }
   } catch (error) {
@@ -132,21 +157,29 @@ router.get('/pitches', async (req: Request, res: Response) => {
   try {
     const { sessionId, minHeight, maxHeight, minQuality, limit = '100', offset = '0' } = req.query;
 
-    // TODO: Integrate with mobile app's database
-    const pitches = {
-      total: 0,
+    const filters = {
+      sessionId: sessionId as string | undefined,
+      minHeight: minHeight ? parseFloat(minHeight as string) : undefined,
+      maxHeight: maxHeight ? parseFloat(maxHeight as string) : undefined,
+      minQuality: minQuality ? parseInt(minQuality as string) : undefined,
       limit: parseInt(limit as string),
       offset: parseInt(offset as string),
-      pitches: [],
-      filters: {
-        sessionId: sessionId || null,
-        minHeight: minHeight ? parseFloat(minHeight as string) : null,
-        maxHeight: maxHeight ? parseFloat(maxHeight as string) : null,
-        minQuality: minQuality ? parseInt(minQuality as string) : null,
-      },
     };
 
-    res.json(pitches);
+    const pitches = await dbAdapter.getPitchesWithFilters(filters);
+
+    res.json({
+      total: pitches.length,
+      limit: filters.limit,
+      offset: filters.offset,
+      pitches,
+      filters: {
+        sessionId: filters.sessionId || null,
+        minHeight: filters.minHeight || null,
+        maxHeight: filters.maxHeight || null,
+        minQuality: filters.minQuality || null,
+      },
+    });
   } catch (error) {
     res.status(500).json({
       error: 'Failed to fetch pitches',

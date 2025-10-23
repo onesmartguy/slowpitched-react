@@ -4,6 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+import dbAdapter from '../database/adapter';
 
 const router = Router();
 
@@ -15,29 +16,16 @@ router.get('/sessions/:sessionId/summary', async (req: Request, res: Response) =
   try {
     const { sessionId } = req.params;
 
-    // TODO: Integrate with statisticsService
-    const summary = {
-      sessionId,
-      statistics: {
-        minHeight: 0,
-        maxHeight: 0,
-        avgHeight: 0,
-        stdDev: 0,
-        variance: 0,
-        medianHeight: 0,
-        percentile25: 0,
-        percentile75: 0,
-        totalPitches: 0,
-      },
-      avgUncertainty: 0,
-      qualityDistribution: {
-        excellent: 0,
-        good: 0,
-        fair: 0,
-        poor: 0,
-      },
-      pitchFrequency: 0,
-    };
+    const session = await dbAdapter.getSessionById(sessionId);
+
+    if (!session) {
+      return res.status(404).json({
+        error: 'Session not found',
+        message: `No session found with ID: ${sessionId}`,
+      });
+    }
+
+    const summary = await dbAdapter.getSessionSummary(sessionId);
 
     res.json(summary);
   } catch (error) {

@@ -4,6 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
+import dbAdapter from '../database/adapter';
 
 const router = Router();
 
@@ -28,18 +29,13 @@ router.post('/', async (req: Request, res: Response) => {
       });
     }
 
-    // TODO: Integrate with sessionService
-    const session = {
-      id: `session_${Date.now()}`,
+    const session = await dbAdapter.createSession({
       name,
       date,
       pitcherName,
       location,
       notes,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      pitchCount: 0,
-    };
+    });
 
     res.status(201).json(session);
   } catch (error) {
