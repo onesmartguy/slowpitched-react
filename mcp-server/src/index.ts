@@ -10,17 +10,22 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { createLogger, format, transports } from 'winston';
+import { createServer } from 'http';
 
 // Routes
 import dataRouter from './routes/data';
 import analyticsRouter from './routes/analytics';
 import sessionRouter from './routes/session';
 import configRouter from './routes/config';
+import mlRouter from './routes/ml';
 import dbAdapter from './database/adapter';
 import healthRouter from './routes/health';
 
+// WebSocket
+import { wsServer } from './websocket/server';
+
 // Logger configuration
-const logger = createLogger({
+export const logger = createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: format.combine(
     format.timestamp(),
@@ -68,6 +73,7 @@ app.use('/api/data', dataRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/session', sessionRouter);
 app.use('/api/config', configRouter);
+app.use('/api/ml', mlRouter);
 
 // Root endpoint
 app.get('/', (req: Request, res: Response) => {
@@ -81,6 +87,7 @@ app.get('/', (req: Request, res: Response) => {
       analytics: '/api/analytics',
       session: '/api/session',
       config: '/api/config',
+      ml: '/api/ml',
     },
     documentation: 'https://github.com/onesmartguy/slowpitched-react/blob/main/docs/MCP_API.md',
   });
@@ -108,17 +115,24 @@ app.use((req: Request, res: Response) => {
   });
 });
 
+// Create HTTP server for WebSocket support
+const httpServer = createServer(app);
+
 // Initialize database and start server
 dbAdapter
   .initialize()
   .then(() => {
     logger.info('Database initialized successfully');
 
-    app.listen(PORT, () => {
+    // Initialize WebSocket server
+    wsServer.initialize(httpServer);
+
+    httpServer.listen(PORT, () => {
       logger.info(`MCP Server running on port ${PORT}`);
       logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🚀 MCP Server running at http://localhost:${PORT}`);
       console.log(`📊 Database: Connected`);
+      console.log(`📡 WebSocket: Active`);
     });
   })
   .catch((error) => {

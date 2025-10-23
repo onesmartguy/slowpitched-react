@@ -4,7 +4,7 @@
  */
 
 export const DATABASE_NAME = 'pitch_tracker.db';
-export const DATABASE_VERSION = 1;
+export const DATABASE_VERSION = 2;
 
 /**
  * Sessions table - Groups pitches into tracking sessions
@@ -61,6 +61,22 @@ export const CREATE_CALIBRATIONS_TABLE = `
 `;
 
 /**
+ * Users table - Multi-user authentication
+ * Phase 6: User accounts and authentication
+ */
+export const CREATE_USERS_TABLE = `
+  CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY NOT NULL,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    display_name TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+`;
+
+/**
  * Indexes for query performance
  */
 export const CREATE_INDEXES = [
@@ -68,6 +84,8 @@ export const CREATE_INDEXES = [
   'CREATE INDEX IF NOT EXISTS idx_pitches_timestamp ON pitches(timestamp);',
   'CREATE INDEX IF NOT EXISTS idx_sessions_date ON sessions(date);',
   'CREATE INDEX IF NOT EXISTS idx_pitches_quality ON pitches(quality_score);',
+  'CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);',
+  'CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);',
 ];
 
 /**
@@ -84,11 +102,19 @@ export const MIGRATIONS: Migration[] = [
   {
     version: 1,
     name: 'initial_schema',
-    up: [CREATE_SESSIONS_TABLE, CREATE_PITCHES_TABLE, CREATE_CALIBRATIONS_TABLE, ...CREATE_INDEXES],
+    up: [CREATE_SESSIONS_TABLE, CREATE_PITCHES_TABLE, CREATE_CALIBRATIONS_TABLE, ...CREATE_INDEXES.slice(0, 4)],
     down: [
       'DROP TABLE IF EXISTS pitches;',
       'DROP TABLE IF EXISTS sessions;',
       'DROP TABLE IF EXISTS calibrations;',
+    ],
+  },
+  {
+    version: 2,
+    name: 'add_users_table',
+    up: [CREATE_USERS_TABLE, ...CREATE_INDEXES.slice(4)],
+    down: [
+      'DROP TABLE IF EXISTS users;',
     ],
   },
 ];

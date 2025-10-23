@@ -5,6 +5,7 @@
 
 import { Router, Request, Response } from 'express';
 import dbAdapter from '../database/adapter';
+import { wsServer } from '../websocket/server';
 
 const router = Router();
 
@@ -35,6 +36,18 @@ router.post('/', async (req: Request, res: Response) => {
       pitcherName,
       location,
       notes,
+    });
+
+    // Broadcast session created event via WebSocket
+    wsServer.broadcastSessionUpdate({
+      sessionId: session.id,
+      action: 'created',
+      session: {
+        id: session.id,
+        name: session.name,
+        date: session.date,
+        pitchCount: session.pitchCount,
+      },
     });
 
     res.status(201).json(session);
