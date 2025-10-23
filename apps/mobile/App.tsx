@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { initDatabase } from './src/services/database';
+import telemetryService from './src/services/telemetryService';
 
 // Screens
 import TrackingScreen from './src/screens/TrackingScreen';
@@ -37,11 +38,23 @@ function DashboardStack() {
 }
 
 export default function App() {
-  // Initialize database on app startup
+  // Initialize database and telemetry on app startup
   useEffect(() => {
+    const startTime = Date.now();
+
+    telemetryService.trackEvent('app_start');
+
     initDatabase()
-      .then(() => console.log('[App] Database initialized'))
-      .catch((error) => console.error('[App] Database initialization failed:', error));
+      .then(() => {
+        const initTime = Date.now() - startTime;
+        console.log('[App] Database initialized');
+        telemetryService.trackMetric('database_init_time', initTime, 'ms');
+        telemetryService.trackEvent('database_initialized');
+      })
+      .catch((error) => {
+        console.error('[App] Database initialization failed:', error);
+        telemetryService.trackError(error as Error, { context: 'database_init' });
+      });
   }, []);
 
   return (

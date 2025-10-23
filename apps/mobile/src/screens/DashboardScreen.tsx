@@ -12,7 +12,6 @@ import {
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   getAllSessions,
-  getRecentSessions,
   deleteSession,
 } from '../services/database/sessionService';
 import type { Session } from '../types';
@@ -91,7 +90,7 @@ export default function DashboardScreen() {
   const handleSessionPress = useCallback(
     (session: Session) => {
       // Navigate to session detail screen
-      // @ts-ignore - React Navigation types incompatible with React 19
+      // @ts-expect-error - React Navigation types incompatible with React 19
       navigation.navigate('SessionDetail', { sessionId: session.id });
     },
     [navigation]
@@ -246,9 +245,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 3,
   },
-  cardDetails: {
-    marginTop: 12,
-  },
   cardDetailLabel: {
     color: '#8E8E93',
     fontSize: 14,
@@ -258,6 +254,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginBottom: 6,
+  },
+  cardDetails: {
+    marginTop: 12,
   },
   cardDetailValue: {
     color: '#000',
