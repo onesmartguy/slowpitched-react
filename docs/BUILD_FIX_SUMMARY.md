@@ -7,6 +7,7 @@
 **Problem**: Package version mismatches causing build failures
 
 **Root Cause**:
+
 - Dependencies in `package.json` didn't match Expo SDK 53 requirements
 - React 19.1.0 used instead of 19.0.0
 - React Native 0.81.4 used instead of 0.79.6
@@ -39,31 +40,37 @@ pnpm add -wD \
 ### 2. Metro Config Export Errors
 
 **Problem**:
+
 ```
 Error [ERR_PACKAGE_PATH_NOT_EXPORTED]: Package subpath './src/lib/TerminalReporter' is not defined by "exports"
 ```
 
 **Root Cause**:
+
 - Metro version mismatch (0.83.3 vs 0.82.0)
 - Invalid package exports in Metro
 
 **Solution**:
+
 - Updated React Native to 0.79.6 which includes compatible Metro version
 - Ensured all Metro-related packages are aligned
 
 ### 3. Native Folder Conflicts
 
 **Problem**:
+
 ```
 Check for app config fields that may not be synced in a non-CNG project
 This project contains native project folders but also has native configuration properties in app.json
 ```
 
 **Root Cause**:
+
 - `/android` folder present in repository
 - EAS Build couldn't determine if project uses Prebuild (CNG) or manual native code
 
 **Solution**:
+
 - Added `/ios/` and `/android/` to `.gitignore`
 - EAS will now generate these folders via Prebuild during cloud builds
 - Native folders are not committed to version control
@@ -71,6 +78,7 @@ This project contains native project folders but also has native configuration p
 ### 4. Fastlane TestFlight Setup
 
 **Issues Fixed**:
+
 1. Android keystore generation in non-interactive mode
 2. Missing `cli.appVersionSource` in `eas.json`
 3. Missing `ITSAppUsesNonExemptEncryption` in `app.json`
@@ -78,18 +86,19 @@ This project contains native project folders but also has native configuration p
 **Solutions Applied**:
 
 #### eas.json
+
 ```json
 {
   "cli": {
     "version": ">= 13.0.0",
-    "appVersionSource": "remote"  // ✅ Added
+    "appVersionSource": "remote" // ✅ Added
   },
   "build": {
     "production": {
       "ios": { "image": "latest" },
       "android": {
         "buildType": "apk",
-        "credentialsSource": "remote"  // ✅ Added
+        "credentialsSource": "remote" // ✅ Added
       },
       "autoIncrement": true,
       "distribution": "store"
@@ -99,12 +108,13 @@ This project contains native project folders but also has native configuration p
 ```
 
 #### app.json
+
 ```json
 {
   "expo": {
     "ios": {
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false  // ✅ Added
+        "ITSAppUsesNonExemptEncryption": false // ✅ Added
       }
     }
   }

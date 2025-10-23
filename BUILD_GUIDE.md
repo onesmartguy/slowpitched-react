@@ -13,11 +13,13 @@ This guide covers creating development builds for the Pitch Height Tracker Pro a
 ## Why Development Build?
 
 **Standard Expo Go Limitations:**
+
 - ❌ Cannot use VisionCamera (custom native module)
 - ❌ Cannot test actual camera functionality
 - ❌ Cannot test real-time frame processing
 
 **Development Build Benefits:**
+
 - ✅ Full VisionCamera support
 - ✅ Real camera preview and capture
 - ✅ Test all Phase 2 features
@@ -48,12 +50,14 @@ This guide covers creating development builds for the Pitch Height Tracker Pro a
 ### Method 1: Local Build (Recommended for Development)
 
 **Pros:**
+
 - Fastest build times
 - No cloud dependency
 - Free (no EAS account needed)
 - Full control over build process
 
 **Cons:**
+
 - Requires local Xcode/Android Studio setup
 - More initial configuration
 
@@ -78,11 +82,13 @@ npx expo run:ios --device
 ### Method 2: EAS Build (Cloud-based)
 
 **Pros:**
+
 - No local Xcode/Android Studio needed
 - Consistent build environment
 - Easy team sharing
 
 **Cons:**
+
 - Slower (cloud queue)
 - Requires EAS account
 - May have usage limits on free tier
@@ -114,18 +120,21 @@ eas build --profile development --platform ios --local
 ### iOS Local Build:
 
 1. **Verify Prerequisites**
+
    ```bash
    xcodebuild -version  # Should show Xcode version
    pod --version         # Should show CocoaPods version
    ```
 
 2. **Clean Previous Builds** (if any)
+
    ```bash
    rm -rf ios android
    npx expo prebuild --clean
    ```
 
 3. **Build and Run**
+
    ```bash
    npx expo run:ios
    ```
@@ -152,11 +161,13 @@ eas build --profile development --platform ios --local
    - Or connect physical device with USB debugging
 
 2. **Verify ADB**
+
    ```bash
    adb devices  # Should list your emulator/device
    ```
 
 3. **Build and Run**
+
    ```bash
    npx expo run:android
    ```
@@ -205,9 +216,12 @@ Key settings for development builds:
       "permissions": ["android.permission.CAMERA"]
     },
     "plugins": [
-      ["expo-camera", {
-        "cameraPermission": "Allow app to access your camera"
-      }]
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow app to access your camera"
+        }
+      ]
     ]
   }
 }
@@ -220,6 +234,7 @@ Key settings for development builds:
 ### iOS Build Errors
 
 **Error: "No podspec found for..."**
+
 ```bash
 cd ios
 pod install --repo-update
@@ -227,17 +242,20 @@ cd ..
 ```
 
 **Error: "Code signing required"**
+
 - Open `ios/slowpitched.xcworkspace` in Xcode
 - Select project → Signing & Capabilities
 - Choose your team/development certificate
 
 **Error: "Simulator not found"**
+
 ```bash
 xcrun simctl list  # List available simulators
 npx expo run:ios --simulator="iPhone 15 Pro"
 ```
 
 **Build succeeds but app crashes on launch:**
+
 - Check Metro bundler is running
 - Verify no conflicting ports (8081, 19000, 19001)
 - Check console logs in Xcode
@@ -247,12 +265,14 @@ npx expo run:ios --simulator="iPhone 15 Pro"
 ### Android Build Errors
 
 **Error: "SDK location not found"**
+
 ```bash
 # Create/edit android/local.properties
 echo "sdk.dir=/Users/YOUR_USERNAME/Library/Android/sdk" > android/local.properties
 ```
 
 **Error: "Execution failed for task ':app:installDebug'"**
+
 ```bash
 adb kill-server
 adb start-server
@@ -260,6 +280,7 @@ adb devices
 ```
 
 **Error: "Could not resolve all dependencies"**
+
 ```bash
 cd android
 ./gradlew clean
@@ -272,6 +293,7 @@ npx expo run:android
 ### General Issues
 
 **Metro bundler not starting:**
+
 ```bash
 # Kill any running Metro instances
 lsof -ti:8081 | xargs kill -9
@@ -281,6 +303,7 @@ npx expo start --clear
 ```
 
 **Native module not found:**
+
 ```bash
 # Rebuild native project
 rm -rf ios android
@@ -289,6 +312,7 @@ npx expo run:ios  # or run:android
 ```
 
 **Changes not reflecting:**
+
 - JS changes: Shake device → Reload (or press 'r' in terminal)
 - Native changes: Full rebuild required
 - Config changes: Rebuild required
@@ -300,17 +324,20 @@ npx expo run:ios  # or run:android
 Once the development build is running:
 
 ### 1. Grant Camera Permission
+
 - App will request camera permission on first launch
 - Tap "Allow" in system dialog
 - If denied, go to Settings → Privacy → Camera
 
 ### 2. Test Tracking Screen
+
 - Navigate to "Track" tab
 - Verify camera preview appears
 - Test ROI dragging
 - Enter reference height and calibrate
 
 ### 3. Verify Features
+
 - ✓ Camera preview live
 - ✓ ROI overlay draggable
 - ✓ Calibration meter updates
@@ -318,6 +345,7 @@ Once the development build is running:
 - ✓ Detection indicator shows status
 
 ### 4. Check Performance
+
 - FPS should be 30+ (check Metro logs)
 - ROI dragging smooth
 - No lag in UI updates

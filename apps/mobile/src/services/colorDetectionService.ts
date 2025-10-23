@@ -26,7 +26,7 @@ export class ColorDetectionService {
   rgbToYUV(r: number, g: number, b: number): { y: number; u: number; v: number } {
     const y = 0.299 * r + 0.587 * g + 0.114 * b;
     const u = -0.147 * r - 0.289 * g + 0.436 * b;
-    const v = 0.615 * r - 0.515 * g - 0.100 * b;
+    const v = 0.615 * r - 0.515 * g - 0.1 * b;
 
     return { y, u, v };
   }
@@ -38,11 +38,7 @@ export class ColorDetectionService {
   isYellowBall(y: number, u: number, v: number): boolean {
     const { Y_MIN, Y_MAX, U_MIN, U_MAX, V_MIN, V_MAX } = YELLOW_DETECTION;
 
-    return (
-      y >= Y_MIN && y <= Y_MAX &&
-      u >= U_MIN && u <= U_MAX &&
-      v >= V_MIN && v <= V_MAX
-    );
+    return y >= Y_MIN && y <= Y_MAX && u >= U_MIN && u <= U_MAX && v >= V_MIN && v <= V_MAX;
   }
 
   /**

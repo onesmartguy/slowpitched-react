@@ -138,10 +138,7 @@ export class TrackingPipeline {
    * @param calibration - Calibration data
    * @returns Quality score (0-100)
    */
-  private calculateQualityScore(
-    detection: BallDetectionResult,
-    _calibration: any
-  ): number {
+  private calculateQualityScore(detection: BallDetectionResult, _calibration: any): number {
     // Detection confidence (40% weight)
     const detectionScore = detection.confidence * 0.4;
 

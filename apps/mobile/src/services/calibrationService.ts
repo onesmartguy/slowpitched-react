@@ -64,9 +64,7 @@ export class CalibrationService {
     const uncertaintyFactor = Math.max(1, 5 / measurementCount);
 
     // Base uncertainty from standard deviation (minimum 0.1 feet for single measurement)
-    const baseUncertainty = stdDev > 0
-      ? (stdDev / avgPixelHeight) * referenceHeight
-      : 0.1; // Minimum uncertainty for single measurement
+    const baseUncertainty = stdDev > 0 ? (stdDev / avgPixelHeight) * referenceHeight : 0.1; // Minimum uncertainty for single measurement
 
     // Total uncertainty with factors
     const totalUncertainty = baseUncertainty * uncertaintyFactor;
@@ -115,7 +113,7 @@ export class CalibrationService {
     const uncertaintyScore = Math.max(0, 100 - uncertainty * 100);
     const measurementScore = Math.min(100, measurementCount * 20);
 
-    return Math.round((uncertaintyScore * 0.7 + measurementScore * 0.3));
+    return Math.round(uncertaintyScore * 0.7 + measurementScore * 0.3);
   }
 
   /**

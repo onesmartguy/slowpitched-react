@@ -5,6 +5,7 @@
 **Pitch Height Tracker Pro** is a mobile React Native application for tracking pitch heights in baseball/softball using computer vision. The app leverages VisionCamera with YUV color detection to track yellow ball positions and calculate pitch heights with calibration and uncertainty measurements.
 
 ### Core Value Proposition
+
 - Real-time pitch height tracking using phone camera
 - Automatic ball detection via computer vision
 - Pitch data logging with uncertainty quantification
@@ -16,9 +17,11 @@
 ## 5-Phase Implementation Roadmap
 
 ### Phase 1: Repository Structure & Setup (Foundation)
+
 **Duration:** 2-3 days | **Status:** In Progress | **Owner:** Core Team
 
 **Objectives:**
+
 - Establish monorepo structure for scalability
 - Configure development environment
 - Set up CI/CD infrastructure
@@ -63,6 +66,7 @@
    - Create contribution guidelines
 
 **Deliverables:**
+
 - Complete directory structure
 - Working package.json with all dependencies
 - TypeScript configuration files
@@ -71,21 +75,25 @@
 - Development setup documentation
 
 **Success Criteria:**
+
 - `pnpm install` completes without errors
 - `pnpm run dev` or `expo start` launches development server
 - TypeScript compilation succeeds with no errors
 - GitHub Actions workflows trigger on push
 
 **Blockers/Decisions Needed:**
+
 - Decision: EAS build services vs local build setup
 - Decision: TypeScript strictness level preference
 
 ---
 
 ### Phase 2: Core Tracking Features (MVP Core)
+
 **Duration:** 4-5 days | **Status:** Not Started | **Owner:** Computer Vision Team
 
 **Objectives:**
+
 - Implement real-time camera tracking
 - Build ball detection using color space analysis
 - Create calibration system with quality feedback
@@ -131,6 +139,7 @@
    - Design intuitive coach interface
 
 **Deliverables:**
+
 - Working camera feed with ROI overlay
 - Real-time ball detection visualization
 - Calibration interface with quality metrics
@@ -138,6 +147,7 @@
 - Feature documentation
 
 **Success Criteria:**
+
 - App successfully detects yellow balls in real-time
 - Calibration process completes in <30 seconds
 - Frame processing runs at 30+ FPS
@@ -145,6 +155,7 @@
 - Uncertainty values are within expected ranges
 
 **Technical Considerations:**
+
 - YUV conversion must be optimized for real-time processing
 - Frame processor should run on worker thread
 - ROI updates should be debounced for performance
@@ -153,9 +164,11 @@
 ---
 
 ### Phase 3: Data Layer & Logging (Persistence)
+
 **Duration:** 3-4 days | **Status:** Not Started | **Owner:** Backend/Storage Team
 
 **Objectives:**
+
 - Implement persistent storage solution
 - Create data models for pitch tracking
 - Implement uncertainty calculations
@@ -206,6 +219,7 @@
    - Add transaction support for data integrity
 
 **Deliverables:**
+
 - Database schema documentation
 - TypeScript data models and types
 - Storage utility functions
@@ -213,6 +227,7 @@
 - Migration system documentation
 
 **Success Criteria:**
+
 - Can store/retrieve 1000+ pitches efficiently
 - Queries execute in <100ms
 - Uncertainty values calculated and stored
@@ -220,6 +235,7 @@
 - TypeScript types catch storage errors at compile time
 
 **Technical Decisions:**
+
 - Storage choice: SQLite for offline support and performance
 - Package manager: pnpm for efficient workspace management
 - Uncertainty calculation: Bayesian approach for confidence intervals
@@ -228,9 +244,11 @@
 ---
 
 ### Phase 4: Dashboard & Export (Analytics)
+
 **Duration:** 3-4 days | **Status:** Not Started | **Owner:** UI/Analytics Team
 
 **Objectives:**
+
 - Create intuitive analytics interface
 - Implement data export functionality
 - Provide statistical insights
@@ -280,6 +298,7 @@
    - Add charts and visualizations
 
 **Deliverables:**
+
 - Complete dashboard UI
 - Statistics calculation utilities
 - CSV export functionality
@@ -287,6 +306,7 @@
 - Data visualization components
 
 **Success Criteria:**
+
 - Sessions list loads in <500ms for 100+ sessions
 - CSV exports contain accurate data
 - Statistics calculations are mathematically correct
@@ -294,6 +314,7 @@
 - Dashboard remains responsive with large datasets
 
 **UI/UX Considerations:**
+
 - Clean, intuitive navigation
 - Real-time statistics updates
 - Visual data representations (charts, graphs)
@@ -302,9 +323,11 @@
 ---
 
 ### Phase 5: Agentic AI Integration (Automation)
+
 **Duration:** 3-4 days | **Status:** Not Started | **Owner:** AI/Automation Team
 
 **Objectives:**
+
 - Integrate agent-driven workflows
 - Enable automated build/test/release
 - Implement telemetry for insights
@@ -350,6 +373,7 @@
    - Create agent testing framework
 
 **Deliverables:**
+
 - MCP server implementation
 - Agent endpoint documentation
 - Automated workflow definitions
@@ -357,6 +381,7 @@
 - Integration guide for external agents
 
 **Success Criteria:**
+
 - Agents can successfully execute workflows
 - Build/test/release pipeline fully automated
 - Telemetry data collected and accessible
@@ -364,6 +389,7 @@
 - System handles 100+ agent requests/day
 
 **Scalability Considerations:**
+
 - Rate limiting for agent requests
 - Queuing system for async operations
 - Monitoring and alerting
@@ -374,6 +400,7 @@
 ## Technical Architecture
 
 ### Technology Stack
+
 - **Framework:** React Native with Expo (cross-platform mobile)
 - **Camera:** VisionCamera (real-time frame processing)
 - **Storage:** SQLite (local persistence) + AsyncStorage (session cache)
@@ -414,31 +441,34 @@ Storage → Analytics → Export/Share
 
 ## Phase Completion Criteria & Milestones
 
-| Phase | Target Date | Key Deliverables | Status |
-|-------|------------|------------------|--------|
-| Phase 1 | 2 days | Project structure, configs, CI/CD | In Progress |
-| Phase 2 | 7 days | Camera tracking, ball detection | Not Started |
-| Phase 3 | 10 days | Data persistence, calculations | Not Started |
-| Phase 4 | 13 days | Dashboard, analytics, export | Not Started |
-| Phase 5 | 16 days | AI integration, automation | Not Started |
+| Phase   | Target Date | Key Deliverables                  | Status      |
+| ------- | ----------- | --------------------------------- | ----------- |
+| Phase 1 | 2 days      | Project structure, configs, CI/CD | In Progress |
+| Phase 2 | 7 days      | Camera tracking, ball detection   | Not Started |
+| Phase 3 | 10 days     | Data persistence, calculations    | Not Started |
+| Phase 4 | 13 days     | Dashboard, analytics, export      | Not Started |
+| Phase 5 | 16 days     | AI integration, automation        | Not Started |
 
 ---
 
 ## Success Metrics
 
 ### Functional Metrics
+
 - Ball detection accuracy >95% under normal lighting
 - Pitch height measurement uncertainty <±0.5 feet
 - Calibration completion rate >90%
 - CSV export accuracy 100%
 
 ### Performance Metrics
+
 - Camera frame processing >30 FPS
 - UI responsiveness <100ms latency
 - Storage query performance <100ms
 - App startup time <3 seconds
 
 ### User Experience Metrics
+
 - Calibration time <30 seconds
 - Session recording intuitive (success on first attempt >80%)
 - Export completion rate >95%
@@ -449,12 +479,14 @@ Storage → Analytics → Export/Share
 ## Risk Mitigation
 
 ### Technical Risks
+
 - **Camera Performance:** Optimize frame processor, run on worker thread
 - **Color Detection Accuracy:** Test extensively under varied lighting, add sensitivity controls
 - **Data Accuracy:** Implement uncertainty calculations, validate against known heights
 - **Storage Scalability:** Use SQLite indexing, implement data archival
 
 ### Operational Risks
+
 - **Timeline Overrun:** Daily standups, aggressive scope management
 - **Dependency Issues:** Pin versions, maintain upgrade plan
 - **Testing Coverage:** Implement unit and integration tests in each phase
@@ -465,12 +497,14 @@ Storage → Analytics → Export/Share
 ## Decision Log
 
 ### Phase 1 Decisions
+
 - **Database Choice:** SQLite via expo-sqlite for offline support and performance
 - **Monorepo Strategy:** pnpm workspaces for efficient package management
 - **TypeScript Strictness:** Strict mode for type safety
 - **CI/CD Platform:** GitHub Actions (native to repo, no external cost)
 
 ### Pending Decisions (For Phase 2+)
+
 - State management approach (Context API vs Redux vs Zustand)
 - Exact uncertainty calculation methodology
 - Chart library selection for analytics
@@ -481,6 +515,7 @@ Storage → Analytics → Export/Share
 ## Success Definition
 
 **MVP is complete when:**
+
 1. Users can track pitches in real-time using phone camera
 2. App accurately measures pitch height with documented uncertainty
 3. Users can export pitch data as CSV for analysis
@@ -497,4 +532,3 @@ Storage → Analytics → Export/Share
 3. Create sprint backlog for Phase 2
 4. Schedule team sync on computer vision approach
 5. Begin VisionCamera proof-of-concept in parallel
-

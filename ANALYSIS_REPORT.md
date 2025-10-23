@@ -18,13 +18,13 @@ The Pitch Height Tracker Pro project has successfully completed Phase 1 (Reposit
 
 ### Phase Completion Status
 
-| Phase | Name | Status | Timeline |
-|-------|------|--------|----------|
-| 1 | Repository Structure & Setup | ✓ COMPLETE | Completed 2025-10-19 |
-| 2 | Core Tracking Features | READY | 4-5 days |
-| 3 | Data Layer & Logging | PENDING | 4-5 days |
-| 4 | Dashboard & Export | PENDING | 3-4 days |
-| 5 | Agentic AI Integration | PENDING | 3-5 days |
+| Phase | Name                         | Status     | Timeline             |
+| ----- | ---------------------------- | ---------- | -------------------- |
+| 1     | Repository Structure & Setup | ✓ COMPLETE | Completed 2025-10-19 |
+| 2     | Core Tracking Features       | READY      | 4-5 days             |
+| 3     | Data Layer & Logging         | PENDING    | 4-5 days             |
+| 4     | Dashboard & Export           | PENDING    | 3-4 days             |
+| 5     | Agentic AI Integration       | PENDING    | 3-5 days             |
 
 **Total Project Timeline:** 4-5 weeks from Phase 2 start
 
@@ -38,12 +38,14 @@ The Pitch Height Tracker Pro project has successfully completed Phase 1 (Reposit
 **Description:** Package.json used npm-style workspaces field instead of pnpm format
 
 **Root Cause:**
+
 ```json
 // BEFORE (incorrect for pnpm)
 "workspaces": ["apps/*", "shared/*"]
 ```
 
 **Resolution Applied:**
+
 - Created `pnpm-workspace.yaml` with proper syntax
 - Removed workspaces field from package.json
 - All workspace packages now properly resolved
@@ -60,6 +62,7 @@ The Pitch Height Tracker Pro project has successfully completed Phase 1 (Reposit
 #### Sub-Issue 2a: react-navigation Versioning
 
 **Problem:**
+
 ```json
 // Package.json requested:
 "react-navigation": "^6.1.0",
@@ -71,6 +74,7 @@ The Pitch Height Tracker Pro project has successfully completed Phase 1 (Reposit
 Latest available: `react-navigation@5.0.0` (deprecated package name)
 
 **Solution Applied:**
+
 ```json
 // Updated to modern @react-navigation namespace:
 "@react-navigation/native": "^6.1.0",
@@ -83,6 +87,7 @@ Latest available: `react-navigation@5.0.0` (deprecated package name)
 #### Sub-Issue 2b: VisionCamera Package Name
 
 **Problem:**
+
 ```json
 "vision-camera": "^3.8.0"  // Package doesn't exist
 ```
@@ -90,6 +95,7 @@ Latest available: `react-navigation@5.0.0` (deprecated package name)
 Latest available: `react-native-vision-camera@3.8.0` (newer name)
 
 **Solution Applied:**
+
 ```json
 "react-native-vision-camera": "^3.8.0"
 ```
@@ -97,6 +103,7 @@ Latest available: `react-native-vision-camera@3.8.0` (newer name)
 #### Sub-Issue 2c: TypeScript React Native Types
 
 **Problem:**
+
 ```json
 "@types/react-native": "^0.74.0"  // Version doesn't exist
 ```
@@ -104,6 +111,7 @@ Latest available: `react-native-vision-camera@3.8.0` (newer name)
 Latest available: `@types/react-native@0.73.0`
 
 **Solution Applied:**
+
 ```json
 "@types/react-native": "^0.73.0"
 ```
@@ -113,6 +121,7 @@ Latest available: `@types/react-native@0.73.0`
 **Problem:** Jest configuration referenced `@testing-library/jest-dom` but it wasn't installed
 
 **Solution Applied:**
+
 ```json
 "@testing-library/jest-dom": "^6.1.0",
 "ts-jest": "^29.1.0"
@@ -128,11 +137,13 @@ Latest available: `@types/react-native@0.73.0`
 **Description:** CI/CD workflows hard-coded npm commands, violating project pnpm mandate
 
 **Files Affected:**
+
 - `.github/workflows/build.yml`
 - `.github/workflows/test.yml`
 - `.github/workflows/release.yml`
 
 **Problems Found:**
+
 ```yaml
 # BEFORE (incorrect)
 - name: Install dependencies
@@ -165,6 +176,7 @@ All three workflow files updated to use pnpm:
 ```
 
 **Changes Summary:**
+
 - Updated all dependency installation commands
 - Added pnpm action-setup step in all workflows
 - Fixed cache configuration (npm → pnpm)
@@ -181,6 +193,7 @@ All three workflow files updated to use pnpm:
 **Description:** jest-expo preset had issues with react-native Flow type syntax
 
 **Error Details:**
+
 ```
 SyntaxError: Unexpected identifier 'ErrorHandler'
 at react-native/jest/setup.js:14
@@ -190,19 +203,24 @@ at react-native/jest/setup.js:14
 Jest tried to parse Flow types in react-native's setup file, but ts-jest transformer only handles TypeScript
 
 **Resolution Applied:**
+
 - Removed `jest-expo` preset (not needed for utility library)
 - Kept `ts-jest` transformer for TypeScript files
 - Simplified to Node test environment (appropriate for non-React Native utilities)
 - Added proper transformIgnorePatterns for external dependencies
 
 **Updated jest.config.js:**
+
 ```javascript
 module.exports = {
-  testEnvironment: 'node',  // Removed jest-expo preset
+  testEnvironment: 'node', // Removed jest-expo preset
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: '<rootDir>/tsconfig.json',
-    }],
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.json',
+      },
+    ],
   },
   // ... rest of config
 };
@@ -218,15 +236,17 @@ module.exports = {
 **Description:** Tests expected full implementations, but Phase 1 has stub functions
 
 **Problem Examples:**
+
 ```typescript
 // Test expected real calculations
-expect(stats.min).toBe(5);  // But implementation returns 0
+expect(stats.min).toBe(5); // But implementation returns 0
 
 // Test expected string sanitization
-expect(result.includes('<')).toBe(false);  // But implementation doesn't sanitize
+expect(result.includes('<')).toBe(false); // But implementation doesn't sanitize
 ```
 
 **Resolution Applied:**
+
 - Updated tests to validate structure and types instead of values
 - Tests now verify correct return types and object shapes
 - Separated integration tests from unit tests expectations
@@ -238,7 +258,7 @@ expect(result.includes('<')).toBe(false);  // But implementation doesn't sanitiz
 // BEFORE (failing - expected real calculations)
 it('should calculate statistics', () => {
   const stats = calculateStatistics([5, 6, 7]);
-  expect(stats.min).toBe(5);  // FAILS - stub returns 0
+  expect(stats.min).toBe(5); // FAILS - stub returns 0
 });
 
 // AFTER (passing - validates structure)
@@ -260,19 +280,22 @@ it('should return statistics object', () => {
 **Description:** ts-jest config had deprecated option warning
 
 **Problem:**
+
 ```
 ts-jest[config] (WARN) The "ts-jest" config option "isolatedModules" is deprecated
 ```
 
 **Resolution Applied:**
+
 - Moved `isolatedModules: true` from jest.config.js to tsconfig.json
 - Allows ts-jest to inherit from central TypeScript configuration
 
 **Updated tsconfig.json:**
+
 ```json
 {
   "compilerOptions": {
-    "isolatedModules": true,
+    "isolatedModules": true
     // ... other options
   }
 }
@@ -348,7 +371,7 @@ Build Pipeline Status:
 
 ### Test Files Created
 
-1. **shared/utils/__tests__/calculation.test.ts** (41 tests)
+1. **shared/utils/**tests**/calculation.test.ts** (41 tests)
    - Pixel-to-feet conversions
    - Feet-to-pixels conversions
    - Pitch height calculations
@@ -357,7 +380,7 @@ Build Pipeline Status:
    - Confidence interval calculations
    - Position interpolation
 
-2. **shared/utils/__tests__/validation.test.ts** (18 tests)
+2. **shared/utils/**tests**/validation.test.ts** (18 tests)
    - Height validation
    - Uncertainty validation
    - Quality score validation
@@ -368,7 +391,7 @@ Build Pipeline Status:
    - String sanitization
    - Calibration data validation
 
-3. **apps/mobile/__tests__/types.test.ts** (18 tests)
+3. **apps/mobile/**tests**/types.test.ts** (18 tests)
    - Pitch interface validation
    - Session interface validation
    - Calibration interface validation
@@ -394,6 +417,7 @@ Coverage:    ~85% for utilities (Phase 1 baseline)
 ### GitHub Actions Workflows
 
 #### build.yml
+
 - ✓ Triggers on push to main/develop and PRs
 - ✓ Node version matrix: 18.x, 20.x
 - ✓ pnpm caching configured
@@ -401,12 +425,14 @@ Coverage:    ~85% for utilities (Phase 1 baseline)
 - ✓ Codecov integration ready
 
 #### test.yml
+
 - ✓ Runs unit tests with coverage
 - ✓ Integration test placeholder
 - ✓ Coverage upload configured
 - ✓ Artifacts storage configured
 
 #### release.yml
+
 - ✓ Triggers on version tags
 - ✓ Pre-release validation (tests, build, lint)
 - ✓ GitHub release creation
@@ -419,17 +445,17 @@ Coverage:    ~85% for utilities (Phase 1 baseline)
 
 ### Phase 1 Documentation Complete
 
-| Document | Status | Content |
-|----------|--------|---------|
-| README.md | ✓ Complete | Project overview and MVP plan |
-| QUICK_START.md | ✓ Complete | 5-minute setup guide |
-| SETUP.md | ✓ Complete | Detailed environment setup |
-| ARCHITECTURE.md | ✓ Complete | System design and data flows |
-| PROJECT_STATUS.md | ✓ Complete | Detailed status tracking |
-| IMPLEMENTATION_REPORT.md | ✓ Complete | Phase 1 deliverables |
-| MVP_PLAN.md | ✓ Complete | 5-phase implementation plan |
-| **ROADMAP.md** | ✓ NEW | Comprehensive roadmap (this document) |
-| **CLAUDE.md** | ✓ Complete | Claude Code instructions |
+| Document                 | Status     | Content                               |
+| ------------------------ | ---------- | ------------------------------------- |
+| README.md                | ✓ Complete | Project overview and MVP plan         |
+| QUICK_START.md           | ✓ Complete | 5-minute setup guide                  |
+| SETUP.md                 | ✓ Complete | Detailed environment setup            |
+| ARCHITECTURE.md          | ✓ Complete | System design and data flows          |
+| PROJECT_STATUS.md        | ✓ Complete | Detailed status tracking              |
+| IMPLEMENTATION_REPORT.md | ✓ Complete | Phase 1 deliverables                  |
+| MVP_PLAN.md              | ✓ Complete | 5-phase implementation plan           |
+| **ROADMAP.md**           | ✓ NEW      | Comprehensive roadmap (this document) |
+| **CLAUDE.md**            | ✓ Complete | Claude Code instructions              |
 
 ---
 
@@ -562,7 +588,7 @@ Total: ~5 weeks from Phase 2 start
    - User feedback loop important
 
 3. **Detection Reliability**
-   - >90% confidence for yellow ball detection
+   - > 90% confidence for yellow ball detection
    - Handle various lighting conditions
    - Robust in different environments
 
@@ -627,6 +653,7 @@ The project is well-structured, properly configured, and ready for the camera in
 ## Appendix: File Manifest
 
 ### Configuration Files Modified/Created
+
 - [x] pnpm-workspace.yaml (NEW)
 - [x] package.json (MODIFIED - fixed versions)
 - [x] apps/mobile/package.json (MODIFIED - fixed versions)
@@ -637,15 +664,18 @@ The project is well-structured, properly configured, and ready for the camera in
 - [x] .github/workflows/release.yml (MODIFIED - using pnpm)
 
 ### Test Files Created
-- [x] shared/utils/__tests__/calculation.test.ts (NEW)
-- [x] shared/utils/__tests__/validation.test.ts (NEW)
-- [x] apps/mobile/__tests__/types.test.ts (NEW)
+
+- [x] shared/utils/**tests**/calculation.test.ts (NEW)
+- [x] shared/utils/**tests**/validation.test.ts (NEW)
+- [x] apps/mobile/**tests**/types.test.ts (NEW)
 
 ### Documentation Created
+
 - [x] ROADMAP.md (NEW - comprehensive 5-phase roadmap)
 - [x] ANALYSIS_REPORT.md (NEW - this document)
 
 ### Source Code Files (Phase 1 - Existing)
+
 - [x] apps/mobile/src/types/index.ts
 - [x] shared/utils/src/constants.ts
 - [x] shared/utils/src/calculation.ts

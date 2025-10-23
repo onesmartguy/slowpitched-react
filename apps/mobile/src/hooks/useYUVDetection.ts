@@ -80,12 +80,9 @@ export function useYUVDetection() {
   /**
    * Convert RGB to YUV (utility function)
    */
-  const rgbToYUV = useCallback(
-    (r: number, g: number, b: number) => {
-      return colorDetectionService.rgbToYUV(r, g, b);
-    },
-    []
-  );
+  const rgbToYUV = useCallback((r: number, g: number, b: number) => {
+    return colorDetectionService.rgbToYUV(r, g, b);
+  }, []);
 
   return {
     state,

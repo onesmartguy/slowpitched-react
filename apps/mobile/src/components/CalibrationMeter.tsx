@@ -52,7 +52,9 @@ export default function CalibrationMeter({ calibrationData, qualityScore }: Cali
 
       {/* Quality Meter */}
       <View style={styles.meterContainer}>
-        <View style={[styles.meterFill, { width: `${qualityScore}%`, backgroundColor: qualityColor }]} />
+        <View
+          style={[styles.meterFill, { width: `${qualityScore}%`, backgroundColor: qualityColor }]}
+        />
       </View>
 
       {/* Quality Score */}

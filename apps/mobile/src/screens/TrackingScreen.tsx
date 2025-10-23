@@ -151,9 +151,7 @@ export default function TrackingScreen() {
             onPress={handleStartCalibration}
             disabled={isCalibrating}
           >
-            <Text style={styles.buttonText}>
-              {isCalibrating ? 'Calibrating...' : 'Calibrate'}
-            </Text>
+            <Text style={styles.buttonText}>{isCalibrating ? 'Calibrating...' : 'Calibrate'}</Text>
           </TouchableOpacity>
 
           {calibrationData && (

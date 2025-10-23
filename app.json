@@ -12,17 +12,13 @@
       "resizeMode": "contain",
       "backgroundColor": "#1e1e1e"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.slowpitched.ios",
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access to track pitch heights",
         "NSPhotoLibraryUsageDescription": "We need photo library access to save tracking data",
-        "UIRequiredDeviceCapabilities": [
-          "camera"
-        ],
+        "UIRequiredDeviceCapabilities": ["camera"],
         "ITSAppUsesNonExemptEncryption": false
       },
       "buildNumber": "2"
@@ -33,10 +29,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1e1e1e"
       },
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
-      ]
+      "permissions": ["android.permission.CAMERA", "android.permission.RECORD_AUDIO"]
     },
     "web": {
       "favicon": "./assets/favicon.png"

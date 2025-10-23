@@ -75,6 +75,7 @@ cd fastlane
 ```
 
 This script will:
+
 - Prompt you for Key ID, Issuer ID, and path to .p8 file
 - Convert the key to base64
 - Create a `.env` file with all credentials
@@ -162,6 +163,7 @@ fastlane beta
 ```
 
 **What it does:**
+
 1. Triggers EAS production build
 2. Waits for build to complete
 3. Downloads IPA
@@ -177,6 +179,7 @@ fastlane deploy
 ```
 
 **What it does:**
+
 1. Builds with EAS (waits for completion)
 2. Downloads IPA from EAS
 3. Uploads to TestFlight
@@ -226,13 +229,13 @@ fastlane bump_build
 2. Navigate to **Settings > Secrets and variables > Actions**
 3. Add the following secrets:
 
-| Secret Name | Description | Example |
-|------------|-------------|---------|
-| `EXPO_TOKEN` | Expo access token | Get from `npx expo login` |
-| `ASC_KEY_ID` | App Store Connect Key ID | `ABC123DEFG` |
-| `ASC_ISSUER_ID` | App Store Connect Issuer ID | `12345678-1234-...` |
-| `ASC_KEY_CONTENT` | Base64 encoded .p8 key | `LS0tLS1CRUdJTi...` |
-| `CONTACT_EMAIL` | Support email (optional) | `support@slowpitched.com` |
+| Secret Name       | Description                 | Example                   |
+| ----------------- | --------------------------- | ------------------------- |
+| `EXPO_TOKEN`      | Expo access token           | Get from `npx expo login` |
+| `ASC_KEY_ID`      | App Store Connect Key ID    | `ABC123DEFG`              |
+| `ASC_ISSUER_ID`   | App Store Connect Issuer ID | `12345678-1234-...`       |
+| `ASC_KEY_CONTENT` | Base64 encoded .p8 key      | `LS0tLS1CRUdJTi...`       |
+| `CONTACT_EMAIL`   | Support email (optional)    | `support@slowpitched.com` |
 
 ### Getting Expo Token
 

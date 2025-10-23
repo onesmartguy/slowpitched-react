@@ -118,7 +118,7 @@ describe('ColorDetectionService', () => {
         50, // roiX
         50, // roiY
         40, // roiWidth
-        40  // roiHeight
+        40 // roiHeight
       );
 
       expect(result.detected).toBe(false);

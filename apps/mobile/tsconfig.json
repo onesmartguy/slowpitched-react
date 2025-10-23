@@ -13,13 +13,6 @@
       "@store/*": ["./src/store/*"]
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "index.js"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "index.js"],
+  "exclude": ["node_modules", "dist"]
 }

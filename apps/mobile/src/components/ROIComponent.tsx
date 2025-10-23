@@ -76,10 +76,7 @@ export default function ROIComponent({ onROIChange, initialROI }: ROIComponentPr
   });
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-    ],
+    transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
   }));
 
   return (

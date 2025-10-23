@@ -86,12 +86,12 @@ SKIP_WAITING=true
 
 ### Secrets to Configure
 
-| Secret | Description |
-|--------|-------------|
-| `EXPO_TOKEN` | From `npx expo whoami --token` |
-| `ASC_KEY_ID` | App Store Connect Key ID |
-| `ASC_ISSUER_ID` | App Store Connect Issuer ID |
-| `ASC_KEY_CONTENT` | Base64 .p8 key |
+| Secret            | Description                    |
+| ----------------- | ------------------------------ |
+| `EXPO_TOKEN`      | From `npx expo whoami --token` |
+| `ASC_KEY_ID`      | App Store Connect Key ID       |
+| `ASC_ISSUER_ID`   | App Store Connect Issuer ID    |
+| `ASC_KEY_CONTENT` | Base64 .p8 key                 |
 
 ### Trigger Deployment
 

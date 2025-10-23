@@ -32,18 +32,12 @@ export default function BallDetectionIndicator({ detection }: BallDetectionIndic
 
       {/* Detection status */}
       <View style={styles.textContainer}>
-        <Text style={styles.statusText}>
-          {detected ? 'Ball Detected' : 'No Ball'}
-        </Text>
+        <Text style={styles.statusText}>{detected ? 'Ball Detected' : 'No Ball'}</Text>
 
         {detected && (
           <>
-            <Text style={styles.detailText}>
-              Confidence: {confidence}%
-            </Text>
-            <Text style={styles.detailText}>
-              Pixels: {pixelCount}
-            </Text>
+            <Text style={styles.detailText}>Confidence: {confidence}%</Text>
+            <Text style={styles.detailText}>Pixels: {pixelCount}</Text>
           </>
         )}
       </View>

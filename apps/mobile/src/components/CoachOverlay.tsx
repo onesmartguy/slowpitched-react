@@ -34,10 +34,7 @@ export default function CoachOverlay({ message, type, show }: CoachOverlayProps)
 
       // Subtle pulse animation
       scale.value = withRepeat(
-        withSequence(
-          withTiming(1.05, { duration: 1000 }),
-          withTiming(1, { duration: 1000 })
-        ),
+        withSequence(withTiming(1.05, { duration: 1000 }), withTiming(1, { duration: 1000 })),
         -1,
         true
       );

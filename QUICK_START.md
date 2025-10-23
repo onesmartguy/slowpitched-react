@@ -84,16 +84,16 @@ pnpm run build              # Production build
 
 ## Key Files to Know
 
-| File | Purpose | Location |
-|------|---------|----------|
-| `app.json` | Expo configuration | Root |
-| `tsconfig.json` | TypeScript setup | Root |
-| `package.json` | Dependencies & scripts | Root |
-| `SETUP.md` | Full setup guide | /docs |
-| `ARCHITECTURE.md` | System design | /docs |
-| `MVP_PLAN.md` | Implementation roadmap | /docs |
-| `types/index.ts` | Type definitions | /apps/mobile/src |
-| `constants.ts` | Shared constants | /shared/utils/src |
+| File              | Purpose                | Location          |
+| ----------------- | ---------------------- | ----------------- |
+| `app.json`        | Expo configuration     | Root              |
+| `tsconfig.json`   | TypeScript setup       | Root              |
+| `package.json`    | Dependencies & scripts | Root              |
+| `SETUP.md`        | Full setup guide       | /docs             |
+| `ARCHITECTURE.md` | System design          | /docs             |
+| `MVP_PLAN.md`     | Implementation roadmap | /docs             |
+| `types/index.ts`  | Type definitions       | /apps/mobile/src  |
+| `constants.ts`    | Shared constants       | /shared/utils/src |
 
 ## Project Structure
 
@@ -111,16 +111,19 @@ slowpitched-react/
 ### Recommended Extensions
 
 1. **ES7+ React/Redux/React-Native snippets**
+
    ```
    ext install dsznajder.es7-react-js-snippets
    ```
 
 2. **ESLint**
+
    ```
    ext install dbaeumer.vscode-eslint
    ```
 
 3. **Prettier**
+
    ```
    ext install esbenp.prettier-vscode
    ```
@@ -147,11 +150,13 @@ Add to `.vscode/settings.json`:
 ## Troubleshooting
 
 ### Port Already in Use
+
 ```bash
 pnpm run dev -- --port 19001
 ```
 
 ### Clear Cache
+
 ```bash
 pnpm run clean
 pnpm install
@@ -159,12 +164,14 @@ pnpm run dev
 ```
 
 ### Node Modules Issues
+
 ```bash
 rm -rf node_modules
 pnpm install
 ```
 
 ### TypeScript Errors
+
 ```bash
 pnpm run type-check
 ```

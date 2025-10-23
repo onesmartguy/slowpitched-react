@@ -15,17 +15,16 @@ export default function DashboardScreen() {
         <View style={styles.placeholderCard}>
           <Text style={styles.cardTitle}>Recent Sessions</Text>
           <Text style={styles.cardText}>
-            Session history and statistics will be displayed here once the data layer is implemented.
+            Session history and statistics will be displayed here once the data layer is
+            implemented.
           </Text>
         </View>
 
         <View style={styles.placeholderCard}>
           <Text style={styles.cardTitle}>Statistics</Text>
           <Text style={styles.cardText}>
-            • Average pitch height{'\n'}
-            • Min/Max heights{'\n'}
-            • Variance and uncertainty{'\n'}
-            • Pitch count per session
+            • Average pitch height{'\n'}• Min/Max heights{'\n'}• Variance and uncertainty{'\n'}•
+            Pitch count per session
           </Text>
         </View>
 

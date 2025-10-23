@@ -12,6 +12,7 @@
 The Pitch Height Tracker Pro project is a comprehensive React Native mobile application for real-time baseball/softball pitch height tracking using computer vision. This roadmap outlines the complete 5-phase implementation plan with current status, technical details, and actionable next steps.
 
 ### Key Project Metrics
+
 - **Total Phases:** 5
 - **Current Phase:** 1 (Repository Structure & Setup) - COMPLETE
 - **Next Phase:** 2 (Core Tracking Features) - READY TO START
@@ -41,6 +42,7 @@ Phase 1 (COMPLETE)      Phase 2 (NEXT)         Phase 3              Phase 4     
 ### Deliverables Completed
 
 #### 1. Monorepo Structure (✓)
+
 - Root workspace configuration with pnpm
 - Three main workspaces:
   - `@slowpitched/mobile` - Main React Native app
@@ -48,6 +50,7 @@ Phase 1 (COMPLETE)      Phase 2 (NEXT)         Phase 3              Phase 4     
   - Infrastructure and CI/CD configuration
 
 **File Structure:**
+
 ```
 slowpitched-react/
 ├── apps/mobile/              # React Native app
@@ -80,6 +83,7 @@ slowpitched-react/
 ```
 
 #### 2. TypeScript Configuration (✓)
+
 - Root `tsconfig.json` with strict mode enabled
 - Workspace-specific configurations
 - Path aliases for clean imports:
@@ -88,7 +92,9 @@ slowpitched-react/
   - `@components/*`, `@screens/*`, `@hooks/*`, `@store/*`, `@utils/*`, `@types/*`
 
 #### 3. Core Type Definitions (✓)
+
 Comprehensive TypeScript interfaces for the entire application:
+
 - `Pitch` - Single measurement with uncertainty and metadata
 - `Session` - Collection of pitches with metadata
 - `CalibrationData` - Calibration information and uncertainty
@@ -102,6 +108,7 @@ Comprehensive TypeScript interfaces for the entire application:
 #### 4. Shared Utilities Foundation (✓)
 
 **Constants (`constants.ts`):**
+
 - Yellow ball detection thresholds (YUV color space)
 - Calibration parameters
 - Frame processing settings
@@ -113,6 +120,7 @@ Comprehensive TypeScript interfaces for the entire application:
 - Application messages and error handling
 
 **Calculations (`calculation.ts`):**
+
 - Pitch height calculations
 - Uncertainty computations
 - Statistical analysis (mean, variance, std dev, percentiles)
@@ -121,6 +129,7 @@ Comprehensive TypeScript interfaces for the entire application:
 - Position interpolation for smooth tracking
 
 **Validation (`validation.ts`):**
+
 - Height range validation
 - Uncertainty validation
 - Quality score validation
@@ -135,14 +144,17 @@ Comprehensive TypeScript interfaces for the entire application:
 #### 5. Dependencies Installed (✓)
 
 **Core Framework:**
+
 - Expo 51 with all standard plugins
 - React 18.3
 - React Native 0.74
 
 **State Management:**
+
 - Zustand 4.5 (lightweight state management)
 
 **Navigation:**
+
 - @react-navigation/native 6.1
 - @react-navigation/bottom-tabs 6.5
 - @react-navigation/stack 6.3
@@ -150,19 +162,23 @@ Comprehensive TypeScript interfaces for the entire application:
 - react-native-safe-area-context 4.14
 
 **Camera & Vision:**
+
 - react-native-vision-camera 3.9
 - expo-camera 14.1
 
 **Storage & Database:**
+
 - expo-sqlite 14.0
 - React Native AsyncStorage (via expo ecosystem)
 
 **Animations & UI:**
+
 - React Native Reanimated 3.19
 - React Native Gesture Handler 2.28
 - React Native SVG 14.2
 
 **Development Tools:**
+
 - TypeScript 5.9
 - ESLint 8.57 (with React, TypeScript, React Native plugins)
 - Prettier 3.6
@@ -172,6 +188,7 @@ Comprehensive TypeScript interfaces for the entire application:
 #### 6. CI/CD Pipelines Configured (✓)
 
 **build.yml - Build Pipeline:**
+
 - Triggers: Push to main/develop, pull requests
 - Node version matrix: 18.x, 20.x
 - Steps: Install → Type-check → Lint → Format → Test → Build
@@ -179,6 +196,7 @@ Comprehensive TypeScript interfaces for the entire application:
 - Uses pnpm with proper caching
 
 **test.yml - Test Pipeline:**
+
 - Same triggers as build
 - Runs unit and integration tests
 - Generates coverage reports
@@ -186,7 +204,8 @@ Comprehensive TypeScript interfaces for the entire application:
 - Coverage reporting integration
 
 **release.yml - Release Automation:**
-- Triggers on version tags (v*)
+
+- Triggers on version tags (v\*)
 - Manual trigger with version input
 - Pre-release validation (tests, build, lint)
 - GitHub release creation
@@ -204,6 +223,7 @@ Comprehensive TypeScript interfaces for the entire application:
 #### 8. Code Quality Tools (✓)
 
 **ESLint Configuration (.eslintrc.json):**
+
 - React plugin for JSX linting
 - TypeScript plugin for type-aware linting
 - React Native plugin for mobile-specific rules
@@ -211,6 +231,7 @@ Comprehensive TypeScript interfaces for the entire application:
 - Strict error/warning levels
 
 **Prettier Configuration (.prettierrc.json):**
+
 - Consistent code formatting
 - 2-space indentation
 - Semicolons enabled
@@ -287,6 +308,7 @@ Comprehensive TypeScript interfaces for the entire application:
 ### Deliverables
 
 **Components to Create:**
+
 - `CameraScreen.tsx` - Main camera feed component
 - `ROIComponent.tsx` - Draggable ROI overlay
 - `CalibrationMeter.tsx` - Quality and uncertainty display
@@ -294,18 +316,21 @@ Comprehensive TypeScript interfaces for the entire application:
 - `CoachOverlay.tsx` - Animated guidance system
 
 **Hooks to Implement:**
+
 - `useCameraPermissions()` - Handle camera permission requests
 - `useFrameProcessing()` - Real-time frame processing pipeline
 - `useYUVDetection()` - YUV color space ball detection
 - `useCalibration()` - Calibration data management and uncertainty
 
 **Services to Create:**
+
 - `cameraService.ts` - Camera configuration and frame capture
 - `colorDetectionService.ts` - YUV color space analysis
 - `calibrationService.ts` - Calibration calculations
 - `trackingPipeline.ts` - Orchestrate tracking workflow
 
 **Navigation Structure:**
+
 ```
 Root Navigation Stack
 ├── TrackingScreen (Tab 1)
@@ -322,30 +347,35 @@ Root Navigation Stack
 ### Technical Considerations
 
 **VisionCamera Performance:**
+
 - Target frame rate: 30+ FPS
 - Minimize frame processing latency
 - Optimize YUV analysis algorithm
 - Consider GPU acceleration for color detection
 
 **Color Detection Strategy:**
+
 - YUV color space thresholds (from constants)
 - Morphological operations for noise reduction
 - Centroid calculation for ball position
 - Confidence scoring based on pixel count and saturation
 
 **Calibration Approach:**
+
 - Reference height input from user
 - Multiple calibration frames for stability
 - Uncertainty calculation from measurement variance
 - Visual feedback during calibration process
 
 ### Entry Criteria
+
 - Phase 1 completed
 - Development environment set up
 - Team familiar with Expo and React Native
 - Camera hardware available for testing
 
 ### Success Criteria
+
 - Camera stream displays at 30+ FPS
 - ROI overlay responds smoothly to drag gestures
 - Yellow ball detection identifies pitches with >90% confidence
@@ -354,6 +384,7 @@ Root Navigation Stack
 - Navigation between screens works smoothly
 
 ### Estimated Effort: 4-5 days
+
 - Day 1: VisionCamera integration & frame processing
 - Day 2: YUV color detection implementation
 - Day 3: ROI component & calibration system
@@ -396,6 +427,7 @@ Root Navigation Stack
 ### Deliverables
 
 **Database Schema:**
+
 ```sql
 -- Pitches table
 CREATE TABLE pitches (
@@ -431,6 +463,7 @@ CREATE TABLE calibration (
 ```
 
 **Zustand Store Implementation:**
+
 ```typescript
 interface PitchStore {
   pitches: Pitch[];
@@ -445,6 +478,7 @@ interface PitchStore {
 ```
 
 **Database Layer Services:**
+
 - `pitchRepository.ts` - Pitch CRUD operations
 - `sessionRepository.ts` - Session management
 - `calibrationRepository.ts` - Calibration data
@@ -453,24 +487,28 @@ interface PitchStore {
 ### Technical Considerations
 
 **Database Optimization:**
+
 - Indexes on sessionId and timestamp
 - Pagination for large result sets
 - Query optimization for statistics calculations
 - Lazy loading for historical data
 
 **Uncertainty Propagation:**
+
 - Combine calibration, detection, tracking uncertainties
 - Weighting factors for each source
 - Confidence interval calculations
 - Time-series uncertainty smoothing
 
 **Data Validation:**
+
 - Input validation before database insertion
 - Referential integrity checks
 - Data type validation
 - Range boundary validation
 
 ### Success Criteria
+
 - SQLite database initializes without errors
 - CRUD operations work for all entities
 - Statistics calculations are accurate
@@ -479,6 +517,7 @@ interface PitchStore {
 - Query performance acceptable for 1000+ pitches
 
 ### Estimated Effort: 4-5 days
+
 - Day 1: SQLite schema & repository layer
 - Day 2: Zustand store implementation
 - Day 3: Uncertainty calculation engine
@@ -526,18 +565,21 @@ interface PitchStore {
 ### Deliverables
 
 **Screens to Create:**
+
 - `DashboardScreen.tsx` - Overview and session list
 - `SessionDetailScreen.tsx` - Detailed session view
 - `StatisticsScreen.tsx` - Charts and statistics
 - `ExportScreen.tsx` - Export options
 
 **Components:**
+
 - `SessionCard.tsx` - Session list item
 - `StatisticsChart.tsx` - Data visualization (using react-native-svg)
 - `ExportDialog.tsx` - Export format selection
 - `ShareSheet.tsx` - Share functionality
 
 **Services:**
+
 - `csvExportService.ts` - CSV generation
 - `statisticsService.ts` - Statistics calculations
 - `shareService.ts` - Native share integration
@@ -546,24 +588,28 @@ interface PitchStore {
 ### Technical Considerations
 
 **Data Visualization:**
+
 - Use react-native-svg for charts
 - Performance optimization for large datasets
 - Responsive layout for different screen sizes
 - Animation transitions
 
 **Export Formats:**
+
 - CSV with proper escaping and encoding
 - PDF generation (if needed)
 - JSON export for data interchange
 - Excel compatibility
 
 **Performance:**
+
 - Pagination for large session lists
 - Lazy loading of statistics
 - Memory optimization for chart rendering
 - Background processing for exports
 
 ### Success Criteria
+
 - Dashboard displays all sessions correctly
 - Statistics calculations are accurate
 - CSV export preserves all data
@@ -572,6 +618,7 @@ interface PitchStore {
 - UI is intuitive and responsive
 
 ### Estimated Effort: 3-4 days
+
 - Day 1: Dashboard screens and session list
 - Day 2: Statistics and visualization
 - Day 3: Export functionality
@@ -610,12 +657,14 @@ interface PitchStore {
 ### Deliverables
 
 **MCP Server Implementation:**
+
 - Agent workflow definitions
 - Tool registration system
 - Context management
 - Response formatting
 
 **API Endpoints:**
+
 - `/api/sessions` - Session queries
 - `/api/pitches` - Pitch data access
 - `/api/statistics` - Statistics calculation
@@ -623,6 +672,7 @@ interface PitchStore {
 - `/api/analysis` - Data analysis
 
 **Automation Scripts:**
+
 - Build automation
 - Test automation
 - Release workflows
@@ -631,24 +681,28 @@ interface PitchStore {
 ### Technical Considerations
 
 **MCP Integration:**
+
 - Standardized interface for agents
 - Context window optimization
 - Token usage monitoring
 - Response time optimization
 
 **Telemetry:**
+
 - Privacy-preserving analytics
 - Opt-in data collection
 - Secure transmission
 - Local-first approach
 
 **Extensibility:**
+
 - Plugin architecture
 - External service integration
 - Custom workflow support
 - AI model integration
 
 ### Success Criteria
+
 - MCP server responds correctly to agent queries
 - Automated workflows complete successfully
 - Telemetry data is accurate and secure
@@ -656,6 +710,7 @@ interface PitchStore {
 - Documentation for agent integration
 
 ### Estimated Effort: 3-5 days
+
 - Day 1: MCP server setup
 - Day 2: API endpoints
 - Day 3: Automation scripts
@@ -808,19 +863,23 @@ pnpm run build
 ## Current Build Issues & Fixes Applied
 
 ### Issue 1: pnpm Workspace Configuration
+
 **Problem:** Package.json used npm-style workspaces field
 **Solution:** Created `pnpm-workspace.yaml` with proper configuration
 **Status:** FIXED ✓
 
 ### Issue 2: Dependency Version Conflicts
+
 **Problems Found:**
+
 - `react-navigation@^6.1.0` doesn't exist (latest is 5.0.0)
 - `vision-camera@^3.8.0` package name outdated
 - `@types/react-native@^0.74.0` doesn't exist (latest is 0.73.0)
 - `react-navigation-bottom-tabs` deprecated structure
 
 **Solutions Applied:**
-- Updated to proper @react-navigation/* namespace packages
+
+- Updated to proper @react-navigation/\* namespace packages
 - Changed `vision-camera` to `react-native-vision-camera`
 - Added `react-native-screens` and `react-native-safe-area-context` (peer dependencies)
 - Updated @types/react-native to 0.73.0
@@ -829,9 +888,11 @@ pnpm run build
 **Status:** FIXED ✓
 
 ### Issue 3: CI/CD Using npm Instead of pnpm
+
 **Problem:** GitHub Actions workflows used `npm ci` and `npm run`
 **Solution:** Updated all workflows to use pnpm with proper caching
 **Changes:**
+
 - Build.yml updated for pnpm
 - Test.yml updated for pnpm
 - Release.yml updated for pnpm
@@ -841,11 +902,13 @@ pnpm run build
 **Status:** FIXED ✓
 
 ### Issue 4: Jest Configuration for React Native
+
 **Problem:** jest-expo preset had compatibility issues with react-native Flow types
 **Solution:** Simplified Jest config to use ts-jest without jest-expo preset
 **Status:** FIXED ✓
 
 ### Issue 5: Test Expectations vs Phase 1 Stub Implementations
+
 **Problem:** Tests expected full implementations, but Phase 1 has stubs
 **Solution:** Updated test expectations to validate types and structure
 **Status:** FIXED ✓
@@ -944,6 +1007,7 @@ TEAM ALIGNMENT:
 ## Success Metrics & KPIs
 
 ### Phase 1 (ACHIEVED)
+
 - ✓ Build system operational
 - ✓ 41/41 tests passing
 - ✓ TypeScript strict mode enabled
@@ -951,6 +1015,7 @@ TEAM ALIGNMENT:
 - ✓ Documentation complete
 
 ### Phase 2 Target
+
 - Camera stream 30+ FPS
 - Ball detection >90% confidence
 - ROI selection smooth and responsive
@@ -958,18 +1023,21 @@ TEAM ALIGNMENT:
 - Navigation transitions <200ms
 
 ### Phase 3 Target
+
 - Database CRUD operations <100ms
 - Statistics calculations <500ms for 1000 pitches
 - No data loss on app crash
 - Export functionality complete
 
 ### Phase 4 Target
+
 - Dashboard loads <2 seconds
 - Charts render smoothly with animations
 - CSV exports preserve all data with <1% error
 - Share functionality works on iOS and Android
 
 ### Phase 5 Target
+
 - MCP server responds <100ms
 - Automated workflows complete successfully
 - Telemetry accurate within 1%
@@ -980,17 +1048,20 @@ TEAM ALIGNMENT:
 ## Resource Requirements
 
 ### Development Team
+
 - 1-2 developers for 4-5 weeks
 - 1 tech lead for architecture review
 - QA for testing (can be developer)
 
 ### Hardware Requirements
+
 - MacBook or Linux workstation (for iOS development)
 - iOS Simulator or device
 - Android Emulator or device
 - High-speed internet for dependencies
 
 ### External Resources
+
 - Expo account (free tier sufficient)
 - GitHub repository (provided)
 - EAS Build service (free tier or paid)
@@ -1001,32 +1072,39 @@ TEAM ALIGNMENT:
 ## Appendix: Technology Stack Details
 
 ### Core Framework
+
 - **Expo 51** - Managed React Native framework
 - **React 18.3** - UI library
 - **React Native 0.74** - Mobile framework
 
 ### State Management
+
 - **Zustand 4.5** - Lightweight state container
 
 ### Navigation
+
 - **React Navigation 6** - Navigation library
 - **React Native Screens 3.27** - Performance optimization
 - **React Native Safe Area Context 4.14** - Notch handling
 
 ### Camera & Vision
+
 - **React Native Vision Camera 3.9** - Real-time camera access
 - **Expo Camera 14.1** - Camera permissions
 
 ### Storage
+
 - **Expo SQLite 14.0** - Database
 - **AsyncStorage** - Key-value storage (via Expo ecosystem)
 
 ### UI & Animation
+
 - **React Native Reanimated 3.19** - High-performance animations
 - **React Native Gesture Handler 2.28** - Gesture recognition
 - **React Native SVG 14.2** - Vector graphics
 
 ### Development Tools
+
 - **TypeScript 5.9** - Type safety
 - **ESLint 8.57** - Code linting
 - **Prettier 3.6** - Code formatting
@@ -1035,6 +1113,7 @@ TEAM ALIGNMENT:
 - **Testing Library** - Testing utilities
 
 ### CI/CD
+
 - **GitHub Actions** - Build automation
 - **Codecov** - Coverage reporting (optional)
 - **EAS Build** - Expo build service (optional)
@@ -1043,10 +1122,10 @@ TEAM ALIGNMENT:
 
 ## Document Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2025-10-19 | Initial Phase 1 completion report |
-| 2.0 | 2025-10-20 | Comprehensive roadmap with build fixes documented |
+| Version | Date       | Changes                                           |
+| ------- | ---------- | ------------------------------------------------- |
+| 1.0     | 2025-10-19 | Initial Phase 1 completion report                 |
+| 2.0     | 2025-10-20 | Comprehensive roadmap with build fixes documented |
 
 ---
 

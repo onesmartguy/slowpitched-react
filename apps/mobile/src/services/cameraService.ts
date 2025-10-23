@@ -48,9 +48,7 @@ export class CameraService {
     if (!device) return 30;
 
     // Check if device supports 60fps
-    const supports60fps = device.formats.some((f) =>
-      f.maxFps >= 60
-    );
+    const supports60fps = device.formats.some((f) => f.maxFps >= 60);
 
     // Target 30fps for stability, 60fps if supported and needed
     return supports60fps ? 30 : 30;
@@ -76,9 +74,7 @@ export class CameraService {
     });
 
     // Return format with good resolution (1080p or higher) and 30+ fps
-    return sortedFormats.find(
-      (f) => f.videoHeight >= 1080 && f.maxFps >= 30
-    ) || sortedFormats[0];
+    return sortedFormats.find((f) => f.videoHeight >= 1080 && f.maxFps >= 30) || sortedFormats[0];
   }
 }
 

@@ -25,9 +25,10 @@ The project follows a monorepo structure:
 
 ## Development Commands
 
-*Note: This repository is currently in initial setup phase. Package.json and build scripts will be added during Phase 1.*
+_Note: This repository is currently in initial setup phase. Package.json and build scripts will be added during Phase 1._
 
 Expected commands once setup is complete:
+
 - Build: `pnpm run build` or `expo build`
 - Test: `pnpm test`
 - Start development: `expo start` or `pnpm start`
@@ -36,26 +37,32 @@ Expected commands once setup is complete:
 ## Core Architecture
 
 ### 1. Tracking Pipeline
+
 - **ROI (Region of Interest)**: Draggable component for defining tracking area
 - **Color Gating**: YUV-based yellow ball detection for filtering
 - **Calibration System**: Quality meter with uncertainty calculations and animated coach overlay
 - **Real-time Processing**: VisionCamera frame processing for position tracking
 
 ### 2. Data Model
+
 The pitch data model includes:
+
 - Pitch height measurements
 - Calibration uncertainty values
 - Session metadata for grouping pitches
 - Timestamp and tracking quality metrics
 
 ### 3. Storage & Export
+
 - SQLite/AsyncStorage for local pitch persistence
 - Session-based organization
 - CSV export with native share sheet integration
 - Statistical aggregation (min/avg/max, variance)
 
 ### 4. Agentic AI Integration
+
 The project includes hooks for automated workflows:
+
 - MCP server endpoints for external tooling
 - Automated build/test/release pipelines
 - Telemetry and analytics integration
@@ -64,6 +71,7 @@ The project includes hooks for automated workflows:
 ## Implementation Phases
 
 The project is being built in 5 phases:
+
 1. Repository structure and setup
 2. Core tracking features (ROI, VisionCamera, color detection, calibration)
 3. Data layer with pitch logging and uncertainty calculations
@@ -73,16 +81,19 @@ The project is being built in 5 phases:
 ## Key Technical Considerations
 
 ### Camera Integration
+
 - VisionCamera is the primary camera interface
 - Frame processing must handle real-time YUV color space conversion
 - ROI component must be performant and responsive to drag gestures
 
 ### Calibration System
+
 - Uncertainty measurements are critical for data quality
 - Calibration coach provides user feedback through animated overlays
 - Quality meter must be visible during tracking sessions
 
 ### Data Integrity
+
 - All pitch measurements include uncertainty values
 - Session-based organization allows filtering and comparison
 - Export functionality must preserve data fidelity for analysis

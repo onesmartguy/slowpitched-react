@@ -144,9 +144,7 @@ describe('CalibrationService', () => {
 
   describe('pixelsToFeet', () => {
     it('should throw error when not calibrated', () => {
-      expect(() => calibrationService.pixelsToFeet(100)).toThrow(
-        'No calibration data available'
-      );
+      expect(() => calibrationService.pixelsToFeet(100)).toThrow('No calibration data available');
     });
 
     it('should correctly convert pixels to feet', () => {

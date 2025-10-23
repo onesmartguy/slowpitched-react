@@ -235,15 +235,15 @@ Filtering:
 
 ```typescript
 interface Pitch {
-  id: string;                    // UUID v4
-  sessionId: string;             // Reference to session
-  height: number;                // Feet (0-12)
-  uncertainty: number;           // ±feet (0-5)
-  timestamp: number;             // Unix ms
-  qualityScore: number;          // 0-100
+  id: string; // UUID v4
+  sessionId: string; // Reference to session
+  height: number; // Feet (0-12)
+  uncertainty: number; // ±feet (0-5)
+  timestamp: number; // Unix ms
+  qualityScore: number; // 0-100
   ballPosition: {
-    x: number;                   // Pixel x
-    y: number;                   // Pixel y
+    x: number; // Pixel x
+    y: number; // Pixel y
   };
   metadata?: {
     pitchType?: string;
@@ -257,11 +257,11 @@ interface Pitch {
 
 ```typescript
 interface Session {
-  id: string;                    // UUID v4
-  createdAt: number;             // Unix ms
-  updatedAt: number;             // Unix ms
-  name: string;                  // User-provided
-  pitchCount: number;            // Denormalized for query performance
+  id: string; // UUID v4
+  createdAt: number; // Unix ms
+  updatedAt: number; // Unix ms
+  name: string; // User-provided
+  pitchCount: number; // Denormalized for query performance
   metadata?: {
     location?: string;
     pitcher?: string;

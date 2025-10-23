@@ -5,6 +5,7 @@ Complete guide to deploying Pitch Height Tracker Pro to TestFlight using EAS Bui
 ## Overview
 
 This project uses:
+
 - **Expo EAS Build** - Cloud-based iOS builds
 - **Fastlane** - Automated TestFlight uploads
 - **GitHub Actions** - CI/CD automation
@@ -82,6 +83,7 @@ cd fastlane
 ```
 
 Follow the prompts and provide:
+
 - Key ID
 - Issuer ID
 - Path to your .p8 file
@@ -103,9 +105,11 @@ eas build --platform ios --profile production
 ```
 
 **First-time setup**: EAS will ask to create iOS credentials. Choose:
+
 - **Generate new credentials** - Let EAS manage everything (recommended)
 
 This creates:
+
 - Distribution Certificate
 - Provisioning Profile
 - Stores them encrypted on Expo servers
@@ -129,6 +133,7 @@ If successful, your build will appear in App Store Connect TestFlight within 5-1
 For automated deployments, add these secrets to GitHub:
 
 **Get Expo Token:**
+
 ```bash
 npx expo whoami --token
 ```
@@ -137,11 +142,11 @@ npx expo whoami --token
 
 Go to: `Settings > Secrets and variables > Actions`
 
-| Secret Name | Value | Where to Get |
-|-------------|-------|--------------|
-| `EXPO_TOKEN` | `expo-xxxxx...` | `npx expo whoami --token` |
-| `ASC_KEY_ID` | `ABC123DEFG` | From App Store Connect API page |
-| `ASC_ISSUER_ID` | `12345678-1234...` | From App Store Connect API page |
+| Secret Name       | Value               | Where to Get                     |
+| ----------------- | ------------------- | -------------------------------- |
+| `EXPO_TOKEN`      | `expo-xxxxx...`     | `npx expo whoami --token`        |
+| `ASC_KEY_ID`      | `ABC123DEFG`        | From App Store Connect API page  |
+| `ASC_ISSUER_ID`   | `12345678-1234...`  | From App Store Connect API page  |
 | `ASC_KEY_CONTENT` | `LS0tLS1CRUdJTi...` | Run `cat AuthKey_*.p8 \| base64` |
 
 **Trigger Deployment:**
@@ -170,6 +175,7 @@ fastlane deploy
 ```
 
 This will:
+
 1. Build with EAS
 2. Download IPA
 3. Upload to TestFlight
@@ -194,13 +200,13 @@ git push origin main --tags
 
 ## Available Fastlane Commands
 
-| Command | Description |
-|---------|-------------|
-| `fastlane deploy` | Complete flow: build, download, upload |
-| `fastlane beta` | Build and upload (alias for deploy) |
-| `fastlane build_with_eas` | Just build with EAS |
-| `fastlane upload_only` | Upload existing IPA |
-| `fastlane bump_build` | Increment build number |
+| Command                   | Description                            |
+| ------------------------- | -------------------------------------- |
+| `fastlane deploy`         | Complete flow: build, download, upload |
+| `fastlane beta`           | Build and upload (alias for deploy)    |
+| `fastlane build_with_eas` | Just build with EAS                    |
+| `fastlane upload_only`    | Upload existing IPA                    |
+| `fastlane bump_build`     | Increment build number                 |
 
 ## TestFlight Setup
 
@@ -213,11 +219,13 @@ git push origin main --tags
 5. Add testers to the group
 
 **Internal Testing:**
+
 - Up to 100 users on your Apple Developer team
 - No review process
 - Instant access
 
 **External Testing:**
+
 - Up to 10,000 testers
 - Requires Apple review (first build only)
 - Public TestFlight link option
