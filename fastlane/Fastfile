@@ -1,0 +1,143 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build iOS app with EAS and upload to TestFlight"
+  lane :beta do
+    # Build with EAS
+    build_with_eas
+
+    # Upload to TestFlight
+    upload_to_testflight_lane
+  end
+
+  desc "Build iOS app using EAS"
+  lane :build_with_eas do
+    # Ensure we're using the production profile
+    sh("eas build --platform ios --profile production --non-interactive --no-wait")
+
+    # Wait for build to complete and download
+    # Note: You can also use eas build --wait flag instead
+    UI.message("Waiting for EAS build to complete...")
+    sh("eas build:list --platform ios --limit 1 --json > build_info.json")
+
+    # The build will be downloaded manually or via webhook
+    # For now, we expect the IPA to be at the root as build.ipa
+  end
+
+  desc "Download latest EAS build"
+  lane :download_build do
+    # Get the latest build URL from EAS
+    build_info = sh("eas build:list --platform ios --limit 1 --json")
+
+    # Parse and download (this requires jq or manual parsing)
+    UI.message("Download your build from EAS dashboard or use:")
+    UI.message("eas build:download --platform ios --latest")
+  end
+
+  desc "Upload existing IPA to TestFlight"
+  lane :upload_to_testflight_lane do
+    # Configure App Store Connect API Key
+    api_key = app_store_connect_api_key(
+      key_id: ENV['ASC_KEY_ID'],
+      issuer_id: ENV['ASC_ISSUER_ID'],
+      key_content: ENV['ASC_KEY_CONTENT'],
+      is_key_content_base64: true,
+      duration: 1200,
+      in_house: false
+    )
+
+    # Parse TestFlight groups from environment variable
+    groups = (ENV['TESTFLIGHT_GROUPS'] || "").split(",").map(&:strip).reject(&:empty?)
+
+    # Upload to TestFlight
+    pilot(
+      api_key: api_key,
+      ipa: ENV['IPA_PATH'] || "build.ipa",
+      skip_waiting_for_build_processing: ENV['SKIP_WAITING'] == 'true',
+      distribute_external: groups.any?,
+      groups: groups,
+      changelog: ENV['CHANGELOG'] || "Bug fixes and improvements",
+      notify_external_testers: groups.any?,
+      beta_app_review_info: {
+        contact_email: ENV['CONTACT_EMAIL'] || "support@slowpitched.com",
+        contact_first_name: ENV['CONTACT_FIRST_NAME'] || "Support",
+        contact_last_name: ENV['CONTACT_LAST_NAME'] || "Team",
+        contact_phone: ENV['CONTACT_PHONE'] || "+1-555-0100",
+        demo_account_name: ENV['DEMO_ACCOUNT_NAME'] || "",
+        demo_account_password: ENV['DEMO_ACCOUNT_PASSWORD'] || "",
+        notes: ENV['REVIEW_NOTES'] || "This is a beta release for internal testing"
+      }
+    )
+
+    UI.success("Successfully uploaded to TestFlight! 🚀")
+  end
+
+  desc "Build with EAS, download, and upload to TestFlight (complete flow)"
+  lane :deploy do
+    # Step 1: Trigger EAS build
+    UI.message("🏗️  Starting EAS build...")
+    sh("eas build --platform ios --profile production --non-interactive")
+
+    # Step 2: Download the build
+    UI.message("⬇️  Downloading build...")
+    sh("eas build:download --platform ios --latest --output=./build.ipa")
+
+    # Step 3: Upload to TestFlight
+    UI.message("🚀 Uploading to TestFlight...")
+    upload_to_testflight_lane
+
+    # Step 4: Cleanup
+    UI.message("🧹 Cleaning up...")
+    sh("rm -f build.ipa")
+
+    UI.success("✅ Complete! Build is processing on TestFlight")
+  end
+
+  desc "Upload existing build without building"
+  lane :upload_only do |options|
+    ipa_path = options[:ipa] || ENV['IPA_PATH'] || "build.ipa"
+
+    unless File.exist?(ipa_path)
+      UI.user_error!("IPA file not found at: #{ipa_path}")
+    end
+
+    ENV['IPA_PATH'] = ipa_path
+    upload_to_testflight_lane
+  end
+
+  desc "Increment build number and commit"
+  lane :bump_build do
+    # This will increment the build number in app.json
+    increment_build_number_in_app_json
+
+    # Commit the change
+    git_commit(
+      path: ["./app.json"],
+      message: "Bump build number [skip ci]"
+    )
+  end
+
+  # Helper lane to increment build number in app.json
+  private_lane :increment_build_number_in_app_json do
+    require 'json'
+
+    app_json_path = "../app.json"
+    app_json = JSON.parse(File.read(app_json_path))
+
+    current_build = app_json['expo']['ios']['buildNumber'].to_i
+    new_build = current_build + 1
+
+    app_json['expo']['ios']['buildNumber'] = new_build.to_s
+
+    File.write(app_json_path, JSON.pretty_generate(app_json))
+
+    UI.message("Build number incremented: #{current_build} → #{new_build}")
+  end
+end
+
+# Error handling
+error do |lane, exception|
+  UI.error("Error in lane #{lane}:")
+  UI.error(exception.message)
+  UI.error(exception.backtrace.join("\n")) if exception.backtrace
+end

@@ -1,0 +1,11 @@
+# App identifier for your app
+app_identifier("com.slowpitched.ios")
+
+# Your Apple ID (Apple Developer Account email)
+apple_id(ENV["APPLE_ID"] || "your-appleid@domain.com")
+
+# Developer Portal Team ID
+team_id(ENV["TEAM_ID"] || "JL693396NK")
+
+# App Store Connect Team ID (if different from Developer Portal)
+itc_team_id(ENV["ITC_TEAM_ID"] || ENV["TEAM_ID"] || "JL693396NK")

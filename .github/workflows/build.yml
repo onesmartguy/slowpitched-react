@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm run type-check
+
+      - name: Run linter
+        run: pnpm run lint
+
+      - name: Check code formatting
+        run: pnpm run format:check
+
+      - name: Run tests
+        run: pnpm run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
+      - name: Build for Expo
+        run: pnpm run build
+        env:
+          NODE_ENV: production
+
+  build-status:
+    needs: build
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.build.result }}" != "success" ]; then
+            echo "Build failed!"
+            exit 1
+          fi
+          echo "Build succeeded!"

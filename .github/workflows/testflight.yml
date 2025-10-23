@@ -1,0 +1,120 @@
+name: Deploy to TestFlight
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      changelog:
+        description: 'Changelog for this release'
+        required: false
+        default: 'Bug fixes and improvements'
+      testflight_groups:
+        description: 'TestFlight groups (comma-separated)'
+        required: false
+        default: ''
+
+  # Automatic trigger on release tags
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  deploy-ios:
+    name: Build and Deploy iOS to TestFlight
+    runs-on: macos-latest
+
+    steps:
+      - name: 🛒 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: 📚 Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: 🗄️ Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 📥 Install dependencies
+        run: pnpm install
+
+      - name: 🔐 Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🍎 Setup Ruby for Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: false
+
+      - name: 💎 Install Fastlane
+        run: |
+          gem install fastlane
+          fastlane --version
+
+      - name: 🏗️ Build iOS app with EAS
+        run: |
+          eas build --platform ios --profile production --non-interactive --wait
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: ⬇️ Download build from EAS
+        run: |
+          eas build:download --platform ios --latest --output=./build.ipa
+
+      - name: 🚀 Upload to TestFlight
+        run: |
+          fastlane upload_only ipa:build.ipa
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+          TESTFLIGHT_GROUPS: ${{ github.event.inputs.testflight_groups || '' }}
+          CHANGELOG: ${{ github.event.inputs.changelog || 'Bug fixes and improvements' }}
+          SKIP_WAITING: 'true'
+          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL || 'support@slowpitched.com' }}
+          CONTACT_FIRST_NAME: 'Support'
+          CONTACT_LAST_NAME: 'Team'
+          CONTACT_PHONE: '+1-555-0100'
+          REVIEW_NOTES: 'This is a beta release for internal testing'
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          rm -f build.ipa
+          rm -f fastlane/report.xml
+
+      - name: 📊 Upload Fastlane logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fastlane-logs
+          path: |
+            fastlane/report.xml
+            ~/Library/Logs/fastlane/
+
+      - name: ✅ Success notification
+        if: success()
+        run: |
+          echo "::notice::Successfully deployed to TestFlight! 🚀"
+          echo "::notice::Build will be available for testing once it's processed by Apple"
