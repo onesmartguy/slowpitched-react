@@ -5,7 +5,7 @@ import {
   calculatePitchHeight,
   calculateUncertainty,
   calculateStatistics,
-  calculateConfidenceInterval,
+  calculateConfidenceIntervalStub,
   pixelsToFeet,
   feetToPixels,
   interpolatePosition,
@@ -107,15 +107,15 @@ describe('Calculation Utilities', () => {
     });
   });
 
-  describe('calculateConfidenceInterval', () => {
+  describe('calculateConfidenceIntervalStub', () => {
     it('should calculate confidence interval', () => {
-      const result = calculateConfidenceInterval(6, 1, 0.95);
+      const result = calculateConfidenceIntervalStub(6, 1, 0.95);
       expect(result.lower).toBeDefined();
       expect(result.upper).toBeDefined();
     });
 
     it('should have lower < upper', () => {
-      const result = calculateConfidenceInterval(6, 1, 0.95);
+      const result = calculateConfidenceIntervalStub(6, 1, 0.95);
       expect(result.lower).toBeLessThanOrEqual(result.upper);
     });
   });

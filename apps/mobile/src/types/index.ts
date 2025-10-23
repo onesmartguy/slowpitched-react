@@ -151,6 +151,26 @@ export interface SessionStatistics {
 }
 
 /**
+ * Quality distribution for pitches
+ */
+export interface QualityDistribution {
+  excellent: number; // 90-100
+  good: number; // 70-89
+  fair: number; // 50-69
+  poor: number; // 0-49
+}
+
+/**
+ * Complete session summary with statistics and distributions
+ */
+export interface SessionSummary {
+  statistics: SessionStatistics;
+  avgUncertainty: number;
+  qualityDistribution: QualityDistribution;
+  pitchFrequency: number; // pitches per minute
+}
+
+/**
  * Navigation route parameters
  */
 export type RootStackParamList = {

@@ -75,13 +75,14 @@ export function calculateStatistics(
 }
 
 /**
- * Calculate confidence interval for measurements
+ * Calculate confidence interval for measurements (stub - use uncertainty.calculateConfidenceInterval instead)
+ * @deprecated Use calculateConfidenceInterval from uncertainty.ts
  * @param mean - Mean height
  * @param stdDev - Standard deviation
  * @param confidence - Confidence level (0.95 for 95%)
  * @returns Confidence interval bounds
  */
-export function calculateConfidenceInterval(
+export function calculateConfidenceIntervalStub(
   mean: number,
   stdDev: number,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
