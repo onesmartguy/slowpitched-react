@@ -59,10 +59,11 @@ export async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
         }
 
         // Record migration
-        await db.runAsync(
-          'INSERT INTO migrations (version, name, applied_at) VALUES (?, ?, ?)',
-          [migration.version, migration.name, new Date().toISOString()]
-        );
+        await db.runAsync('INSERT INTO migrations (version, name, applied_at) VALUES (?, ?, ?)', [
+          migration.version,
+          migration.name,
+          new Date().toISOString(),
+        ]);
       });
 
       console.log(`[Database] Migration ${migration.name} completed`);

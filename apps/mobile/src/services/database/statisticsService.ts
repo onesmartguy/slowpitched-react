@@ -106,7 +106,9 @@ export async function getPitchHeightDistribution(
     const binStart = min + i * binSize;
     const binEnd = binStart + binSize;
 
-    const count = heights.filter((h) => h >= binStart && (i === binCount - 1 ? h <= binEnd : h < binEnd)).length;
+    const count = heights.filter(
+      (h) => h >= binStart && (i === binCount - 1 ? h <= binEnd : h < binEnd)
+    ).length;
 
     bins.push({ binStart, binEnd, count });
   }
@@ -122,8 +124,7 @@ export async function calculateAverageUncertainty(sessionId: string): Promise<nu
 
   if (pitches.length === 0) return 0;
 
-  const avgUncertainty =
-    pitches.reduce((sum, p) => sum + p.uncertainty, 0) / pitches.length;
+  const avgUncertainty = pitches.reduce((sum, p) => sum + p.uncertainty, 0) / pitches.length;
 
   return avgUncertainty;
 }

@@ -29,9 +29,7 @@ function rowToCalibration(row: CalibrationRow): CalibrationData {
 /**
  * Convert CalibrationData object to database row format
  */
-function calibrationToRow(
-  calibration: CalibrationData
-): Omit<CalibrationRow, 'id' | 'created_at'> {
+function calibrationToRow(calibration: CalibrationData): Omit<CalibrationRow, 'id' | 'created_at'> {
   return {
     reference_height: calibration.referenceHeight,
     pixels_per_foot: calibration.pixelsPerFoot,
@@ -81,10 +79,9 @@ export async function createCalibration(
  */
 export async function getCalibrationById(id: string): Promise<CalibrationData> {
   const db = getDatabase();
-  const row = await db.getFirstAsync<CalibrationRow>(
-    'SELECT * FROM calibrations WHERE id = ?',
-    [id]
-  );
+  const row = await db.getFirstAsync<CalibrationRow>('SELECT * FROM calibrations WHERE id = ?', [
+    id,
+  ]);
 
   if (!row) {
     throw new Error(`Calibration not found: ${id}`);
@@ -120,9 +117,7 @@ export async function getAllCalibrations(): Promise<CalibrationData[]> {
 /**
  * Get calibrations with quality above threshold
  */
-export async function getHighQualityCalibrations(
-  minQuality: number
-): Promise<CalibrationData[]> {
+export async function getHighQualityCalibrations(minQuality: number): Promise<CalibrationData[]> {
   const db = getDatabase();
   const rows = await db.getAllAsync<CalibrationRow>(
     'SELECT * FROM calibrations WHERE quality_score >= ? ORDER BY created_at DESC',

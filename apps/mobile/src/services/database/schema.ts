@@ -84,12 +84,7 @@ export const MIGRATIONS: Migration[] = [
   {
     version: 1,
     name: 'initial_schema',
-    up: [
-      CREATE_SESSIONS_TABLE,
-      CREATE_PITCHES_TABLE,
-      CREATE_CALIBRATIONS_TABLE,
-      ...CREATE_INDEXES,
-    ],
+    up: [CREATE_SESSIONS_TABLE, CREATE_PITCHES_TABLE, CREATE_CALIBRATIONS_TABLE, ...CREATE_INDEXES],
     down: [
       'DROP TABLE IF EXISTS pitches;',
       'DROP TABLE IF EXISTS sessions;',

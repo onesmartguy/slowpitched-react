@@ -68,10 +68,7 @@ export function propagateUncertaintyMultiplication(
 /**
  * Propagate uncertainty through addition/subtraction
  */
-export function propagateUncertaintyAddition(
-  uncertainty1: number,
-  uncertainty2: number
-): number {
+export function propagateUncertaintyAddition(uncertainty1: number, uncertainty2: number): number {
   // Root sum of squares
   return Math.sqrt(Math.pow(uncertainty1, 2) + Math.pow(uncertainty2, 2));
 }
@@ -86,7 +83,8 @@ export function calculateCalibrationUncertainty(
   if (pixelMeasurements.length < 2) return 0.1; // Default uncertainty
 
   const standardError = calculateStandardError(pixelMeasurements);
-  const meanPixels = pixelMeasurements.reduce((sum, val) => sum + val, 0) / pixelMeasurements.length;
+  const meanPixels =
+    pixelMeasurements.reduce((sum, val) => sum + val, 0) / pixelMeasurements.length;
 
   // Convert pixel uncertainty to feet uncertainty
   const pixelsPerFoot = meanPixels / referenceHeight;
@@ -104,10 +102,7 @@ export function calculatePitchUncertainty(
   qualityScore: number
 ): number {
   // Base uncertainty from calibration and measurement
-  const baseUncertainty = propagateUncertaintyAddition(
-    calibrationUncertainty,
-    measurementNoise
-  );
+  const baseUncertainty = propagateUncertaintyAddition(calibrationUncertainty, measurementNoise);
 
   // Adjust based on quality score (0-100)
   // Lower quality = higher uncertainty
@@ -137,7 +132,10 @@ export function estimateMeasurementNoise(
  * Calculate quality score from uncertainty
  * Lower uncertainty = higher quality
  */
-export function uncertaintyToQualityScore(uncertainty: number, maxUncertainty: number = 1.0): number {
+export function uncertaintyToQualityScore(
+  uncertainty: number,
+  maxUncertainty: number = 1.0
+): number {
   const normalizedUncertainty = Math.min(uncertainty / maxUncertainty, 1.0);
   return Math.round((1 - normalizedUncertainty) * 100);
 }

@@ -88,7 +88,10 @@ export async function getAllSessions(): Promise<Session[]> {
 /**
  * Get sessions within a date range
  */
-export async function getSessionsByDateRange(startDate: string, endDate: string): Promise<Session[]> {
+export async function getSessionsByDateRange(
+  startDate: string,
+  endDate: string
+): Promise<Session[]> {
   const db = getDatabase();
   const rows = await db.getAllAsync<SessionRow>(
     'SELECT * FROM sessions WHERE date BETWEEN ? AND ? ORDER BY date DESC',
@@ -110,7 +113,15 @@ export async function updateSession(session: Session): Promise<Session> {
       name = ?, date = ?, pitcher_name = ?,
       location = ?, notes = ?, updated_at = ?
     WHERE id = ?`,
-    [row.name, row.date, row.pitcher_name, row.location, row.notes, new Date().toISOString(), session.id]
+    [
+      row.name,
+      row.date,
+      row.pitcher_name,
+      row.location,
+      row.notes,
+      new Date().toISOString(),
+      session.id,
+    ]
   );
 
   if (result.changes === 0) {
@@ -166,7 +177,9 @@ export async function searchSessions(query: string): Promise<Session[]> {
  */
 export async function getSessionCount(): Promise<number> {
   const db = getDatabase();
-  const result = await db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM sessions');
+  const result = await db.getFirstAsync<{ count: number }>(
+    'SELECT COUNT(*) as count FROM sessions'
+  );
 
   return result?.count || 0;
 }
