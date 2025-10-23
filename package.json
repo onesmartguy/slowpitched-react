@@ -42,6 +42,7 @@
     "expo-device": "~7.1.4",
     "expo-notifications": "~0.31.0",
     "expo-sharing": "~13.1.5",
+    "expo-sqlite": "^14.0.6",
     "react": "19.0.0",
     "react-native": "0.79.6",
     "react-native-gesture-handler": "~2.24.0",

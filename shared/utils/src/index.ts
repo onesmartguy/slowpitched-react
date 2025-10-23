@@ -6,6 +6,7 @@
 export * from './constants';
 export * from './calculation';
 export * from './validation';
+export * from './uncertainty';
 
 /**
  * Version information
