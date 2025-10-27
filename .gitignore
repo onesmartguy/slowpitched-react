@@ -96,6 +96,17 @@ android/app/build/
 generated/
 __generated__/
 
+# TypeScript compiled outputs
+*.js
+*.js.map
+!jest.config.js
+!babel.config.js
+!metro.config.js
+!.eslintrc.js
+# Allow JS in root and config directories
+!/apps/mobile/App.js
+!/apps/mobile/index.js
+
 # Optional npm cache
 .npm
 

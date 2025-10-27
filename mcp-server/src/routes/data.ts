@@ -5,7 +5,6 @@
 
 import { Router, Request, Response } from 'express';
 import dbAdapter from '../database/adapter';
-import { exportSessionToCSV } from '../../../apps/mobile/src/utils/csvExport';
 
 const router = Router();
 
@@ -114,7 +113,7 @@ router.get('/sessions/:sessionId/export', async (req: Request, res: Response) =>
 
     if (format === 'csv') {
       // Generate CSV export
-      const csv = await exportSessionToCSV(sessionId);
+      const csv = await dbAdapter.exportSessionToCSV(sessionId);
 
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', `attachment; filename="session_${sessionId}.csv"`);
