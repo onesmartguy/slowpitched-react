@@ -66,7 +66,9 @@ export default function TrackingScreen() {
         calibrationService.addMeasurement(mockPixelHeight + (Math.random() - 0.5) * 10);
       }
 
-      const newCalibration = calibrationService.finalizeCalibration(refHeight);
+      // Use current ROI or default ROI if not set
+      const roi = _roi || { x: 0, y: 0, width: 100, height: 100 };
+      const newCalibration = calibrationService.finalizeCalibration(refHeight, roi);
       setCalibrationData(newCalibration);
       setIsCalibrating(false);
       showCoachMessage('Calibration complete!', 'success');
@@ -115,6 +117,7 @@ export default function TrackingScreen() {
   return (
     <View style={styles.container}>
       {/* Camera Feed */}
+      {/* @ts-ignore - React 19 compatibility issue with Camera */}
       <Camera
         style={StyleSheet.absoluteFill}
         device={device}

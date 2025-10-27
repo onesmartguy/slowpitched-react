@@ -40,9 +40,10 @@ export class CalibrationService {
    * Calculates calibration factor and uncertainty
    *
    * @param referenceHeight - Known height in feet
+   * @param roi - Region of interest used for calibration
    * @returns Calibration data with uncertainty
    */
-  finalizeCalibration(referenceHeight: number): CalibrationData {
+  finalizeCalibration(referenceHeight: number, roi: { x: number; y: number; width: number; height: number }): CalibrationData {
     if (this.calibrationMeasurements.length === 0) {
       throw new Error('No calibration measurements available');
     }
@@ -69,11 +70,18 @@ export class CalibrationService {
     // Total uncertainty with factors
     const totalUncertainty = baseUncertainty * uncertaintyFactor;
 
+    // Calculate quality score
+    const uncertaintyScore = Math.max(0, 100 - totalUncertainty * 100);
+    const measurementScore = Math.min(100, measurementCount * 20);
+    const qualityScore = Math.round(uncertaintyScore * 0.7 + measurementScore * 0.3);
+
     this.calibrationData = {
       referenceHeight,
       pixelHeight: avgPixelHeight,
       pixelsPerFoot,
       uncertainty: totalUncertainty,
+      qualityScore,
+      roi,
       timestamp: Date.now(),
       measurementCount,
     };
@@ -93,7 +101,7 @@ export class CalibrationService {
    * @param maxAge - Maximum age in milliseconds (default: 1 hour)
    */
   isCalibrationValid(maxAge: number = 3600000): boolean {
-    if (!this.calibrationData) return false;
+    if (!this.calibrationData || !this.calibrationData.timestamp) return false;
 
     const age = Date.now() - this.calibrationData.timestamp;
     return age < maxAge;
@@ -106,7 +114,7 @@ export class CalibrationService {
   getQualityScore(): number {
     if (!this.calibrationData) return 0;
 
-    const { uncertainty, measurementCount } = this.calibrationData;
+    const { uncertainty, measurementCount = 1 } = this.calibrationData;
 
     // Lower uncertainty = higher quality
     // More measurements = higher quality

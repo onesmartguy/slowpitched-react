@@ -72,6 +72,7 @@ export default function CoachOverlay({ message, type, show }: CoachOverlayProps)
   }
 
   return (
+    // @ts-ignore - React 19 compatibility issue with Animated.View
     <Animated.View style={[styles.container, animatedStyle, { backgroundColor }]}>
       <View style={styles.content}>
         {/* Icon */}

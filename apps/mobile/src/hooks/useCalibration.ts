@@ -46,28 +46,31 @@ export function useCalibration() {
   /**
    * Finalize calibration
    */
-  const finalizeCalibration = useCallback((referenceHeight: number) => {
-    try {
-      const newCalibration = calibrationService.finalizeCalibration(referenceHeight);
-      const newQualityScore = calibrationService.getQualityScore();
+  const finalizeCalibration = useCallback(
+    (referenceHeight: number, roi: { x: number; y: number; width: number; height: number }) => {
+      try {
+        const newCalibration = calibrationService.finalizeCalibration(referenceHeight, roi);
+        const newQualityScore = calibrationService.getQualityScore();
 
-      setState({
-        calibrationData: newCalibration,
-        qualityScore: newQualityScore,
-        isCalibrating: false,
-        measurementCount: 0,
-      });
+        setState({
+          calibrationData: newCalibration,
+          qualityScore: newQualityScore,
+          isCalibrating: false,
+          measurementCount: 0,
+        });
 
-      return newCalibration;
-    } catch (error) {
-      console.error('Calibration finalization error:', error);
-      setState((prev) => ({
-        ...prev,
-        isCalibrating: false,
-      }));
-      throw error;
-    }
-  }, []);
+        return newCalibration;
+      } catch (error) {
+        console.error('Calibration finalization error:', error);
+        setState((prev) => ({
+          ...prev,
+          isCalibrating: false,
+        }));
+        throw error;
+      }
+    },
+    []
+  );
 
   /**
    * Reset calibration

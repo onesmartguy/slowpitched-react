@@ -80,7 +80,9 @@ export default function ROIComponent({ onROIChange, initialROI }: ROIComponentPr
   }));
 
   return (
+    // @ts-ignore - React 19 compatibility issue with PanGestureHandler
     <PanGestureHandler onGestureEvent={gestureHandler}>
+      {/* @ts-ignore - React 19 compatibility issue with Animated.View */}
       <Animated.View style={[styles.roi, animatedStyle, { width: roi.width, height: roi.height }]}>
         {/* Corner indicators */}
         <View style={[styles.corner, styles.topLeft]} />
