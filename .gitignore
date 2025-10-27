@@ -106,6 +106,8 @@ __generated__/
 # Allow JS in root and config directories
 !/apps/mobile/App.js
 !/apps/mobile/index.js
+# Allow Jest mocks
+!__mocks__/**/*.js
 
 # Optional npm cache
 .npm
