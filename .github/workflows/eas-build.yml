@@ -1,0 +1,149 @@
+name: EAS Build
+
+on:
+  # Trigger on pull requests to main
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/mobile/**'
+      - 'shared/**'
+      - 'app.json'
+      - 'package.json'
+      - '.github/workflows/eas-build.yml'
+
+  # Trigger on pushes to main (after PR merge)
+  push:
+    branches: [main]
+    paths:
+      - 'apps/mobile/**'
+      - 'shared/**'
+      - 'app.json'
+      - 'package.json'
+
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+      profile:
+        description: 'Build profile'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    name: EAS Build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        platform: [ios, android]
+
+    steps:
+      - name: Check for EXPO_TOKEN
+        run: |
+          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests
+        run: pnpm test
+        continue-on-error: false
+
+      - name: Check TypeScript
+        run: |
+          cd apps/mobile
+          pnpm run type-check
+
+      - name: Determine build profile
+        id: build-profile
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "profile=preview" >> $GITHUB_OUTPUT
+          else
+            echo "profile=production" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build on EAS (iOS)
+        if: matrix.platform == 'ios' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios' || github.event.inputs.platform == '')
+        run: |
+          eas build --platform ios --profile ${{ steps.build-profile.outputs.profile }} --non-interactive --no-wait
+
+      - name: Build on EAS (Android)
+        if: matrix.platform == 'android' && (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android' || github.event.inputs.platform == '')
+        run: |
+          eas build --platform android --profile ${{ steps.build-profile.outputs.profile }} --non-interactive --no-wait
+
+      - name: Comment PR with build links
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const platform = '${{ matrix.platform }}';
+            const profile = '${{ steps.build-profile.outputs.profile }}';
+            const buildUrl = `https://expo.dev/accounts/onesmartguy/projects/slowpitched/builds`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 **EAS Build Started** (${platform})\n\n` +
+                    `**Profile**: \`${profile}\`\n` +
+                    `**Platform**: \`${platform}\`\n\n` +
+                    `View build status: [EAS Dashboard](${buildUrl})\n\n` +
+                    `Once complete, you can download and test the build from the dashboard.`
+            })
+
+  notify-completion:
+    name: Notify Build Status
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.build.result }}" == "success" ]; then
+            echo "✅ All builds completed successfully"
+          else
+            echo "❌ Some builds failed"
+            exit 1
+          fi
