@@ -20,6 +20,7 @@ module.exports = {
     '^@types/(.*)$': '<rootDir>/apps/mobile/src/types/$1',
     '^@hooks/(.*)$': '<rootDir>/apps/mobile/src/hooks/$1',
     '^@store/(.*)$': '<rootDir>/apps/mobile/src/store/$1',
+    '^expo-crypto$': '<rootDir>/__mocks__/expo-crypto.js',
   },
   collectCoverageFrom: [
     'apps/**/*.{ts,tsx}',
